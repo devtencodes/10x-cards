@@ -100,18 +100,19 @@ This plan turns "infrastructure.md's recommendation" into a working, auto-deploy
 - [ ] Edge case (not hit, no action needed): if a `workerd`-specific runtime error appears that doesn't reproduce under plain `astro dev`, retest under `wrangler dev` before assuming it's an application bug — this is the documented `nodejs_compat` polyfill-gap risk from `infrastructure.md`
 - [ ] Edge case (not hit, no action needed): monitor CPU-ms via `wrangler tail`/dashboard if any request feels slow — free tier bills active CPU time, not wall-clock
 
-## Phase 6 — Production auto-deploy via Cloudflare Workers Builds (not GitHub Actions)
+## Phase 6 — Production auto-deploy via Cloudflare Workers Builds (not GitHub Actions) ✅ done
 
-*Requires Phase 5 complete — Workers Builds connects to an existing Worker, so the manual first deploy must exist already.*
+*User connected this independently (dashboard step, human-only by design) — verified working via GitHub's check-run API and `wrangler deployments list` rather than assumed.*
 
-- [ ] Human: Cloudflare Dashboard → Workers & Pages → `10x-cards` → **Settings → Builds → Connect**
-- [ ] Human: authorize Cloudflare's GitHub App for the `devtencodes/10x-cards` repository (OAuth grant — human-only, can't be scripted or done via CLI/API today)
-- [ ] Set **production branch** = `main` (per the flagged interpretation in Context — revisit if a distinct `master` branch is actually wanted)
-- [ ] Set **Build command** = `npm run build`; leave **Deploy command** at its default `npx wrangler deploy`
-- [ ] Leave "non-production branch builds" (PR preview deploys) **off** for now — no stated requirement for preview URLs; note it as an easy opt-in later if wanted
-- [ ] Edge case: Workers Builds' build step runs in an environment isolated from the Worker's runtime — if `npm run build` fails or misbehaves without `SUPABASE_URL`/`SUPABASE_KEY` present, add them under the **build's own** "Variables and secrets" (Settings → Builds), which is a *separate* surface from the Worker's runtime secrets set via `wrangler secret put` in Phase 3. Try without first — the astro:env schema marks both as `optional: true`, so the build likely succeeds either way
-- [ ] Push a trivial commit to `main` and confirm in the dashboard (Workers & Pages → `10x-cards` → Deployments) that an automatic build + deploy ran, and that GitHub shows a commit status/check for it
-- [ ] Confirm `.github/workflows/ci.yml` did **not** perform any deploy step — it only ran lint + build as a separate, parallel PR gate; Cloudflare's Git integration owns production deploys end-to-end
+- [x] Human: Cloudflare Dashboard → Workers & Pages → `10x-cards` → **Settings → Builds → Connect**, GitHub App authorized for `devtencodes/10x-cards`
+- [x] **Production branch** = `main` (confirmed by user)
+- [x] **Non-production branch builds** = **enabled** (user's choice — deviates from this plan's conservative "off for now" default, but is a reasonable, low-risk enhancement: gives PR preview deploys for free; not flagged as a problem)
+- [x] Verified via GitHub's public check-runs API for the latest pushed commit: `Workers Builds: 10x-cards` → `completed`/`success`, alongside `ci` → `completed`/`success`
+- [x] Verified `wrangler deployments list` shows a new deployment entry timestamped right after the check-run completed, confirming the build actually **deployed**, not just compiled
+- [x] Re-checked the live site post-auto-deploy: HTTP 200, config-status banner still absent
+- [x] Confirmed `.github/workflows/ci.yml` (fetched live from GitHub) still has **no** deploy step — checkout/setup-node/npm ci/astro sync/lint/build only. Cloudflare's Git integration owns production deploys end-to-end, exactly as designed
+- [ ] Not yet explicitly confirmed: **Build command**/**Deploy command** settings in the dashboard (assumed `npm run build` / default `npx wrangler deploy` based on successful behavior — low priority to double-check since the pipeline is demonstrably working)
+- [ ] Edge case (not hit, no action needed unless it comes up): if a future build fails due to missing `SUPABASE_URL`/`SUPABASE_KEY` at build time, add them under the build's own "Variables and secrets" (Settings → Builds) — a separate surface from the Worker's runtime secrets
 
 ## Phase 7 — Rollback rehearsal
 
