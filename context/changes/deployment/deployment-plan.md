@@ -12,9 +12,10 @@ This plan turns "infrastructure.md's recommendation" into a working, auto-deploy
 
 **Deploy trigger model (per explicit request)**: first production deploy is **manual** (CLI, Phase 3/5). All deploys after that are **auto-triggered on push to the production branch, handled natively by Cloudflare** — not GitHub Actions. GitHub Actions (`.github/workflows/ci.yml`) stays scoped to lint + build only, as a PR quality gate; it never runs `wrangler deploy`. This is done via **Cloudflare Workers Builds** — Cloudflare's own Git integration (Dashboard → Worker → Settings → Builds → Connect), which `infrastructure.md`'s own Operational Story section already anticipated ("automatically per-PR if Cloudflare's GitHub integration/Workers Builds is connected to the repo"). Confirmed via live research: Workers Builds connects an existing Worker to a GitHub/GitLab repo, builds+deploys on every push to a configurable **production branch**, and is dashboard-only to set up today (no CLI/API path exists yet for the Git-connect step itself — [tracked feature request](https://github.com/cloudflare/workers-sdk/issues/12058)).
 
-> **Two flagged interpretations — correct if wrong:**
+> **Flagged interpretation — correct if wrong:**
 > - "Push to master" is read as **push to `main`** (the repo's actual and only branch; there is no `master` branch to point production at). If a genuinely separate `master` branch is wanted as a distinct production branch from `main`, say so and this plan's Prerequisites/Phase 6 need a branch-strategy addendum.
-> - Dev and prod are read as **sharing one cloud Supabase project** (per earlier confirmation), so the Prerequisites section below skips the README's default local-Docker-Supabase flow (`npx supabase init && supabase start`) in favor of one hosted project used everywhere. The repo already has a `supabase/config.toml` from a prior `npx supabase init` — it's simply unused under this model, not a conflict.
+
+**Supabase model (superseded, corrected 2026-08-26)**: the original plan assumed one cloud Supabase project shared by dev and prod. In practice, `.env` was populated with the **local Supabase CLI/Docker stack** (`SUPABASE_URL=http://127.0.0.1:54321`, confirmed running via `npx supabase status`, publishable key matches). Confirmed decision: **local Docker Supabase for day-to-day dev, a separate cloud project for production.** `.env`/`.dev.vars` hold the local stack's values; the cloud project's own URL/anon key are used only for the Phase 3 production Workers Secrets. The repo's committed `supabase/config.toml` is therefore active and in use, not a leftover.
 
 **Verified-already-fine, no action needed**: `wrangler@4.126.0` is current latest (released yesterday). `.nvmrc` already pins `22.14.0`, consistent with CI's `node-version: 22`. `.gitignore` already correctly excludes `.dev.vars`, `.wrangler/`, `.env*`, `dist/`.
 
@@ -32,18 +33,15 @@ This plan turns "infrastructure.md's recommendation" into a working, auto-deploy
 - [x] Confirm auth works: `npx wrangler whoami` (should print the account email/ID, not an error)
 - [ ] Confirm Node version matches the pinned `.nvmrc`: `nvm use` (installs/switches to `22.14.0` if `nvm` is present; install `nvm` first if missing)
 
-### B. Supabase (one cloud project, shared by dev and prod) — project created ✅
+### B. Supabase — local Docker stack for dev ✅, separate cloud project for prod
 
-- [x] Human: create a Supabase project at [supabase.com](https://supabase.com/dashboard) (organization → New project → name, region, DB password) and wait ~2 minutes for provisioning
-- [x] Human: copy the **Project URL** and **`anon` public key** from Dashboard → Settings → API
-- [ ] Agent: `cp .env.example .env` and `cp .env.example .dev.vars` (`.dev.vars` doesn't exist yet — create it directly), then fill both with the same values:
-  ```
-  SUPABASE_URL=https://<project-ref>.supabase.co
-  SUPABASE_KEY=<anon-key>
-  ```
-- [ ] Skip the README's local-Docker-Supabase flow (`npx supabase init`/`supabase start`) — not needed when dev and prod share one hosted project; the existing committed `supabase/config.toml` (from a prior `npx supabase init`) stays unused
-- [ ] Human decision, not a default: the README documents toggling **Authentication → Email → Confirm email** off for local-dev convenience. Because dev and prod share one project, this toggle is global — leave it **ON** unless the product genuinely wants unverified sign-ins in production too
-- [ ] Verify: `npm run dev`, confirm the "Supabase not configured" banner (`src/lib/config-status.ts`) is absent, then exercise sign-up/sign-in once against the real project
+- [x] Local stack running: `npx supabase status` confirms `Project URL: http://127.0.0.1:54321`, publishable key matches `.env`
+- [x] `.env` populated with local stack values (`SUPABASE_URL=http://127.0.0.1:54321`, `SUPABASE_KEY=sb_publishable_...`)
+- [ ] Create `.dev.vars` mirroring `.env` (same local values) — `.dev.vars` doesn't exist yet; needed for `wrangler dev`/Workers-runtime-accurate local testing
+- [ ] Human: create/confirm a **separate cloud** Supabase project at [supabase.com](https://supabase.com/dashboard) for production (organization → New project → name, region, DB password)
+- [ ] Human: copy the cloud project's **Project URL** and **`anon` public key** from Dashboard → Settings → API — these feed **only** Phase 3's production Workers Secrets, never `.env`/`.dev.vars`
+- [ ] Human decision, not a default: the README documents toggling **Authentication → Email → Confirm email** off for local-dev convenience. Since dev and prod are now separate projects, this can safely be toggled off on the **local** project only, without affecting production
+- [x] Verify: `npm run dev`, confirm the "Supabase not configured" banner (`src/lib/config-status.ts`) is absent, then exercise sign-up/sign-in once against the local stack — done in Phase 1
 
 ### C. GitHub repository ✅ done
 
@@ -51,20 +49,24 @@ This plan turns "infrastructure.md's recommendation" into a working, auto-deploy
 
 ---
 
-## Phase 0 — Pre-flight decisions & housekeeping
+## Phase 0 — Pre-flight decisions & housekeeping ✅ done (commit `fc3adb8`)
 
-- [ ] Rename Worker + package: `wrangler.jsonc`'s `"name"` and `package.json`'s `"name"` → `10x-cards`
-- [ ] Fix the CI branch mismatch: `.github/workflows/ci.yml` triggers (`push`/`pull_request`) → `branches: [main]` (currently `[master]`, which never fires against this repo's actual default branch) — this workflow remains **lint + build only**, it must never gain a deploy step (see Context)
-- [ ] Decide `compatibility_date` in `wrangler.jsonc`: bump from `2026-05-08` to today (`2026-08-26`) — recommended, since nothing has deployed yet so there's no behavior-pinning reason to stay stale
-- [ ] Commit the two changes already sitting uncommitted in the working tree as part of this phase's housekeeping commit:
+- [x] Rename Worker + package: `wrangler.jsonc`'s `"name"` and `package.json`'s `"name"` → `10x-cards`
+- [x] Fix the CI branch mismatch: `.github/workflows/ci.yml` triggers (`push`/`pull_request`) → `branches: [main]` (currently `[master]`, which never fires against this repo's actual default branch) — this workflow remains **lint + build only**, it must never gain a deploy step (see Context)
+- [x] Decide `compatibility_date` in `wrangler.jsonc`: attempted bumping from `2026-05-08` to today (`2026-08-26`), but **reverted back to `2026-05-08`** in Phase 1 after discovering it breaks local dev (see Phase 1's edge case) — `@astrojs/cloudflare@13.5.0`'s bundled Vite plugin caps local Miniflare emulation at compat date `2026-05-14`, regardless of the standalone `wrangler` CLI's own newer version. Staying on the original date is correct until the adapter is upgraded
+- [x] Commit the two changes already sitting uncommitted in the working tree as part of this phase's housekeeping commit:
   - `package.json` / `package-lock.json` — `wrangler` bumped `^4.90.0` → `^4.126.0`
   - `context/foundation/infrastructure.md` — currently untracked
-- [ ] Edge case: since the Cloudflare account is brand new, no name-collision check is needed — skip straight to renaming
+- [x] Edge case: since the Cloudflare account is brand new, no name-collision check is needed — skip straight to renaming
 
-## Phase 1 — Local secrets setup (agent-runnable)
+## Phase 1 — Local secrets setup (agent-runnable) ✅ done
 
-- [ ] Confirmed already done in Prerequisites B (`.dev.vars` created and populated) — no separate action here, just re-verify `npm run dev` shows no config-status banner before moving on
-- [ ] Edge case: if the banner still shows after adding `.dev.vars`, run `npx astro sync` first (regenerates the typed `astro:env` module) before assuming it's a real bug
+- [x] `.dev.vars` created, mirroring `.env` (local Supabase stack values); trailing-whitespace bug fixed in both files
+- [x] `npx astro sync` succeeds, picks up `.dev.vars`
+- [x] `npm run dev` starts clean, homepage returns HTTP 200, config-status banner confirmed **absent**
+- [x] Edge case discovered and fixed: `compatibility_date: 2026-08-26` (Phase 0's bump) broke local dev entirely — `@astrojs/cloudflare@13.5.0`'s bundled Vite plugin pins its own older `workerd` (capped at compat date `2026-05-14`), separate from the standalone `wrangler` CLI's newer nested copy (confirmed via `npm view wrangler@4.126.0 dependencies`: workerd `1.20260825.1`, vs. the adapter's hoisted `1.20260507.1`). Reverted `compatibility_date` to `2026-05-08` in `wrangler.jsonc`. **This caps compatibility_date for local dev until `@astrojs/cloudflare` is upgraded** — worth a callout in Phase 8's docs
+- [x] Sign-up/sign-in round-trip verified against the local Supabase stack: `POST /api/auth/signup` → `302` to `/auth/confirm-email`; `POST /api/auth/signin` → `302` to `/` with a valid `sb-127-auth-token` session cookie decoding to a real authenticated user (`email_confirmed_at` set — consistent with `enable_confirmations = false` in `supabase/config.toml`). Full auth path confirmed working end-to-end, not just non-empty env vars
+- [x] Edge case hit and resolved along the way: curl requests without an `Origin` header matching the dev server got a `403 "Cross-site POST form submissions are forbidden"` — this is Astro's own built-in CSRF protection working as intended, not an app or Supabase bug; adding `-H "Origin: http://localhost:4321"` resolved it
 
 ## Phase 2 — Human-only account & access setup
 
@@ -77,7 +79,7 @@ This plan turns "infrastructure.md's recommendation" into a working, auto-deploy
 
 *This phase exists specifically to convert the "does `astro:env/server` actually see Workers Secrets in production" assumption into a verified fact — see Context above.*
 
-- [ ] Provision the first real Workers Secrets: `wrangler secret put SUPABASE_URL`, `wrangler secret put SUPABASE_KEY` (same values as `.dev.vars`, since dev and prod share one Supabase project)
+- [ ] Provision the first real Workers Secrets: `wrangler secret put SUPABASE_URL`, `wrangler secret put SUPABASE_KEY` using the **separate production Supabase cloud project's** URL/anon key (Prerequisites B) — **not** the local `127.0.0.1:54321` values from `.env`/`.dev.vars`
 - [ ] Deploy manually: `npm run build && npx wrangler deploy`
 - [ ] Hit the deployed `*.workers.dev` URL and confirm the config-status banner is **absent** (proves `astro:env/server` resolved the secret at runtime, not just that it works locally)
 - [ ] Attempt a real sign-in against production Supabase to confirm the full server-side client construction path works end-to-end, not just that the env strings are non-empty
