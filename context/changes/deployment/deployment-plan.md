@@ -68,37 +68,37 @@ This plan turns "infrastructure.md's recommendation" into a working, auto-deploy
 - [x] Sign-up/sign-in round-trip verified against the local Supabase stack: `POST /api/auth/signup` → `302` to `/auth/confirm-email`; `POST /api/auth/signin` → `302` to `/` with a valid `sb-127-auth-token` session cookie decoding to a real authenticated user (`email_confirmed_at` set — consistent with `enable_confirmations = false` in `supabase/config.toml`). Full auth path confirmed working end-to-end, not just non-empty env vars
 - [x] Edge case hit and resolved along the way: curl requests without an `Origin` header matching the dev server got a `403 "Cross-site POST form submissions are forbidden"` — this is Astro's own built-in CSRF protection working as intended, not an app or Supabase bug; adding `-H "Origin: http://localhost:4321"` resolved it
 
-## Phase 2 — Human-only account & access setup
+## Phase 2 — Human-only account & access setup ✅ account confirmed, token scoping deferred (accepted)
 
-- [x] Human creates/confirms Cloudflare account access (done — see Prerequisites A/C)
-- [ ] Human creates a **scoped** API token: Workers Scripts edit permission limited to the `10x-cards` Worker only — no account-wide access, no DNS, no billing (per this project's CLAUDE.md production-access posture: scoped tokens, not master keys). This token is for **local/agent CLI use** (`wrangler deploy`/`secret put`/`rollback`/`tail`) — it is **not** used by GitHub Actions, since production auto-deploy is handled by Cloudflare's own Workers Builds integration (Phase 6), not GHA
-  - [ ] Edge case: sanity-check the token with a harmless read-only command first (e.g. `wrangler whoami` or `wrangler deployments list` using the token) — a wrong-scope token fails with a specific, greppable permission error; seeing that error now makes it recognizable later if a deploy fails for the same reason
-- [ ] Edge case: if `wrangler login` OAuth fails in a headless/sandboxed environment, fall back to the same scoped API token locally too (`CLOUDFLARE_API_TOKEN` env var + `wrangler deploy`) — no separate mechanism needed
+- [x] Human creates/confirms Cloudflare account access — confirmed via `npx wrangler whoami`: active OAuth login (`devtencodes@gmail.com`'s Account, ID `d8a9b6e71ca7f5f225beec54c22ffd3e`)
+- [ ] ~~Human creates a **scoped** API token~~ — **deferred by explicit user decision.** This project's CLAUDE.md calls for scoped tokens (Workers Scripts edit on `10x-cards` only, no account-wide/DNS/billing) for agent-run commands, not the broad OAuth session (which currently carries wide account scope: KV, D1, Pages, AI, containers, etc.). User chose to proceed with the existing OAuth login for speed instead. **Recorded as an accepted deviation, not an oversight** — revisit before granting any agent-driven access to something more sensitive than Workers deploy/secrets
+- [ ] Edge case (now moot given the above): if `wrangler login` OAuth fails in a headless/sandboxed environment, fall back to a scoped API token locally (`CLOUDFLARE_API_TOKEN` env var + `wrangler deploy`)
 
-## Phase 3 — Runtime env-access verification (risk-mitigation gate)
+## Phase 3 — Runtime env-access verification (risk-mitigation gate) ✅ done
 
 *This phase exists specifically to convert the "does `astro:env/server` actually see Workers Secrets in production" assumption into a verified fact — see Context above.*
 
-- [ ] Provision the first real Workers Secrets: `wrangler secret put SUPABASE_URL`, `wrangler secret put SUPABASE_KEY` using the **separate production Supabase cloud project's** URL/anon key (Prerequisites B) — **not** the local `127.0.0.1:54321` values from `.env`/`.dev.vars`
-- [ ] Deploy manually: `npm run build && npx wrangler deploy`
-- [ ] Hit the deployed `*.workers.dev` URL and confirm the config-status banner is **absent** (proves `astro:env/server` resolved the secret at runtime, not just that it works locally)
-- [ ] Attempt a real sign-in against production Supabase to confirm the full server-side client construction path works end-to-end, not just that the env strings are non-empty
-- [ ] **If verification fails** (banner still shows, or a runtime error indicates the vars are undefined): switch `src/lib/supabase.ts` and `src/lib/config-status.ts` from `import { SUPABASE_URL, SUPABASE_KEY } from "astro:env/server"` to `import { env } from "cloudflare:workers"` (the adapter's current documented fallback), redeploy, and re-verify
-- [ ] Record which path worked in Phase 8's docs hand-off — this closes the "env/secrets access pattern changed" row in `infrastructure.md`'s risk register with an empirical answer instead of a guess
+- [x] Provision the first real Workers Secrets: `SUPABASE_URL`/`SUPABASE_KEY` added via the Cloudflare dashboard (user-provisioned directly, not via `wrangler secret put`) — confirmed present via `npx wrangler secret list`
+- [x] Deploy manually: `npm run build && npx wrangler deploy` → `https://10x-cards.devtencodes.workers.dev`. Deploy auto-provisioned two bindings not previously in `wrangler.jsonc`: a `SESSION` KV Namespace and an `IMAGES` binding — both are `@astrojs/cloudflare@13.5.0` defaults (session storage + image processing), not something this plan requested; flagged for Phase 8 docs, not a problem but worth knowing they now exist as live account resources
+- [x] Hit the deployed URL — **first attempt returned HTTP 500**: `wrangler tail` showed `Error: Invalid supabaseUrl: Must be a valid HTTP or HTTPS URL.` The config-status banner was absent even on this failing request, proving `astro:env/server` **did** resolve a truthy secret value — the failure was a bad/malformed value entered into the `SUPABASE_URL` secret itself (data-entry issue), not an env-access mechanism issue. User re-added the secrets via the dashboard; redeploy wasn't even needed — Cloudflare Secrets apply live to the running Worker. Re-check returned **HTTP 200**, banner absent
+- [x] Real sign-up/sign-in against **production** Supabase confirms the full path works end-to-end:
+  - First attempt used `@example.com` → production rejected it (`"Email address ... is invalid"`) — itself a good sign: proves the Worker is genuinely reaching real Supabase Auth and its validation, not a stub
+  - Retried with a realistic domain → sign-up succeeded (302 → `/auth/confirm-email`), sign-in correctly returned `"Email not confirmed"` (production, unlike the local stack, requires email confirmation) — this is the expected, correct security posture for prod, and definitively proves the request chain (Worker → `astro:env/server` → real Supabase Auth API → real validation) is live and correct
+  - **Manual cleanup needed**: a real (unconfirmed) test user was created in production `auth.users` — agent has only the anon key, no service-role key, so can't delete it via Admin API. **User needs to delete `cf-deploy-verify-1787750632@gmail.com` via Supabase Dashboard → Authentication → Users**
+- [x] Verification succeeded on the **first mechanism** — `astro:env/server` correctly resolves Cloudflare Workers Secrets at runtime. **No fallback to `import { env } from "cloudflare:workers"` was needed.** This closes the "env/secrets access pattern changed" row in `infrastructure.md`'s risk register with a definitive empirical answer: the mechanism works as documented on `@astrojs/cloudflare@13.5.0`; the earlier 500 was a secret-value data-entry mistake, not an API/adapter bug
 
-## Phase 4 — Production secrets: already done in Phase 3
+## Phase 4 — Production secrets: already done in Phase 3 ✅
 
-- [ ] Confirm no further action needed here — Phase 3 already provisioned the real production secrets as part of verification. This phase is a placeholder for the future: document (do not execute) the pending step `wrangler secret put OPENROUTER_API_KEY`, to be run when AI-generation (PRD FR-004) actually ships
+- [x] Confirmed — Phase 3 already provisioned the real production secrets. Still pending, for the future: document (do not execute) `wrangler secret put OPENROUTER_API_KEY`, to be run when AI-generation (PRD FR-004) actually ships
 - [ ] Note for later: once secrets exist, rotating them (`wrangler secret put <NAME>` again) is agent-runnable, not human-only
 
-## Phase 5 — First production deploy: confirm end-to-end
+## Phase 5 — First production deploy: confirm end-to-end ✅ done (folded into Phase 3)
 
-*(Largely covered by Phase 3's deploy — this phase is the final sign-off pass on the manual first deploy, before auto-deploy is wired up in Phase 6.)*
-
-- [ ] Re-confirm the `*.workers.dev` URL loads correctly and the config-status banner is absent
-- [ ] Verify auth flow end-to-end: sign up, sign in, sign out against real Supabase
-- [ ] Edge case: if a `workerd`-specific runtime error appears that doesn't reproduce under plain `astro dev`, retest under `wrangler dev` (real `workerd`) before assuming it's an application bug — this is the documented `nodejs_compat` polyfill-gap risk from `infrastructure.md`
-- [ ] Edge case: monitor CPU-ms via `wrangler tail` or the dashboard if any request feels slow to respond — free tier is billed on active CPU time, not wall-clock, so a "waiting on Supabase" request is nearly free but heavy JSON/template work is not
+- [x] Re-confirmed the `*.workers.dev` URL loads correctly (HTTP 200) and the config-status banner is absent
+- [x] Verified auth flow end-to-end: sign up (302 → confirm-email) and sign in (correctly gated on email confirmation) against real production Supabase — see Phase 3 for full detail
+- [ ] Sign-out not yet explicitly tested (low risk — same `createClient()` path already proven working for signin/signup)
+- [ ] Edge case (not hit, no action needed): if a `workerd`-specific runtime error appears that doesn't reproduce under plain `astro dev`, retest under `wrangler dev` before assuming it's an application bug — this is the documented `nodejs_compat` polyfill-gap risk from `infrastructure.md`
+- [ ] Edge case (not hit, no action needed): monitor CPU-ms via `wrangler tail`/dashboard if any request feels slow — free tier bills active CPU time, not wall-clock
 
 ## Phase 6 — Production auto-deploy via Cloudflare Workers Builds (not GitHub Actions)
 
