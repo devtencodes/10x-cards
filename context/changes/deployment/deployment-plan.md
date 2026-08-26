@@ -126,12 +126,12 @@ This plan turns "infrastructure.md's recommendation" into a working, auto-deploy
 - [x] Documented (see Risk Register/Context): `wrangler rollback` reverts Worker code/config only, not Supabase schema state — a deploy bundling a migration is not safely one-command-reversible
 - [x] New observed quirk (not investigated further, not a problem): two Worker Version entries landed ~1m45s apart from what was pushed as a single commit — didn't affect correctness, noted here in case it recurs and needs explaining later
 
-## Phase 8 — Documentation hand-off
+## Phase 8 — Documentation hand-off ✅ done
 
-- [ ] Write `context/deployment/deploy-plan.md` capturing what was actually done: final Worker/package name, `compatibility_date`, secrets provisioned, which env-access pattern worked (Phase 3's outcome), the Workers Builds Git-integration configuration (production branch, build/deploy commands), rollback rehearsal result
-- [ ] Update `context/foundation/tech-stack.md`'s stale hint: `deployment_target: cloudflare-pages` → `cloudflare-workers`
-- [ ] Note (don't necessarily act on): Cloudflare's free-tier request cap resets **daily**, not monthly — worth a one-line callout in the deploy-plan doc in case traffic ever becomes bursty
-- [ ] Commit everything from this phase together with (or as a follow-up to) Phase 0's housekeeping commit
+- [x] Wrote `context/deployment/deploy-plan.md`: final Worker name (`10x-cards`), `compatibility_date` (`2026-05-08`, deliberately not bumped — see its own rationale), secrets provisioned, `astro:env/server` confirmed working (no fallback needed), Workers Builds config (production branch `main`, non-prod branch builds enabled), rollback result, auto-provisioned bindings (`SESSION` KV, `IMAGES`), and the deferred-token-scoping deviation
+- [x] Updated `context/foundation/tech-stack.md`: `deployment_target: cloudflare-pages` → `cloudflare-workers`, plus corrected the body prose (previously said "Deployment defaults to Cloudflare Pages")
+- [x] Daily (not monthly) free-tier reset noted in `deploy-plan.md`'s "Known operational notes"
+- [x] Committed
 
 ---
 
