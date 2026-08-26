@@ -114,14 +114,17 @@ This plan turns "infrastructure.md's recommendation" into a working, auto-deploy
 - [ ] Not yet explicitly confirmed: **Build command**/**Deploy command** settings in the dashboard (assumed `npm run build` / default `npx wrangler deploy` based on successful behavior — low priority to double-check since the pipeline is demonstrably working)
 - [ ] Edge case (not hit, no action needed unless it comes up): if a future build fails due to missing `SUPABASE_URL`/`SUPABASE_KEY` at build time, add them under the build's own "Variables and secrets" (Settings → Builds) — a separate surface from the Worker's runtime secrets
 
-## Phase 7 — Rollback rehearsal
+## Phase 7 — Rollback rehearsal ✅ done
 
 *(Directly addresses `infrastructure.md`'s pre-mortem: "rollback was never tested until an actual incident.")*
 
-- [ ] Ship one trivial, reversible change (e.g. a copy tweak) by pushing to `main` (now auto-deployed via Workers Builds, Phase 6)
-- [ ] Run `wrangler rollback [deployment-id]` and confirm the previous version is restored
-- [ ] Run `wrangler tail` briefly to confirm live log streaming works post-rollback
-- [ ] Document the caveat already in the risk register: `wrangler rollback` reverts code/config only, not Supabase schema state — any deploy that bundles a migration is not safely one-command-reversible
+- [x] Shipped a trivial, reversible copy tweak (`src/components/Welcome.astro`, appended "(rollback rehearsal marker)") by pushing to `main` — both `ci` and `Workers Builds: 10x-cards` GitHub checks completed successfully; confirmed the marker text live on the deployed site (cache-busted to rule out a stale-cache false read)
+- [x] Ran `npx wrangler rollback <version-id> -y -m "..."`, targeting the version from the prior (pre-marker) deploy — succeeded, `100%` traffic moved to the prior version
+- [x] Confirmed rollback took effect: marker text gone from the live site (first check was a false alarm from response caching — cache-busting query param confirmed the real state)
+- [x] Ran `wrangler tail` post-rollback: live request logged correctly (`GET ... - Ok`), confirming log streaming survives a rollback
+- [x] Realigned git: reverted the marker in `main` too and pushed, so a future push doesn't silently resurface it and undo the rollback (Workers Builds redeployed from the reverted `main`, re-verified marker absent) — this wasn't in the original plan but is a real, worth-keeping practice: **a `wrangler rollback` only reverts the live deployment, not the git branch it came from**, so without this step the very next push would have silently undone the rollback
+- [x] Documented (see Risk Register/Context): `wrangler rollback` reverts Worker code/config only, not Supabase schema state — a deploy bundling a migration is not safely one-command-reversible
+- [x] New observed quirk (not investigated further, not a problem): two Worker Version entries landed ~1m45s apart from what was pushed as a single commit — didn't affect correctness, noted here in case it recurs and needs explaining later
 
 ## Phase 8 — Documentation hand-off
 
