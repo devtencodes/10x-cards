@@ -43,7 +43,7 @@ Manually authoring flashcards is the friction that keeps self-directed learners 
 | ID   | Change ID                        | Outcome (user can …)                                                              | Prerequisites          | PRD refs                          | Status   |
 | ---- | --------------------------------- | ----------------------------------------------------------------------------------- | ----------------------- | ---------------------------------- | -------- |
 | F-01 | flashcard-data-foundation         | (foundation) flashcards + review-schedule tables exist in Supabase, RLS-scoped per user | —                        | FR-006, NFR (privacy), Access Control | ready    |
-| S-01 | email-password-auth               | sign up with email + password and log in                                            | —                        | FR-001, FR-002                     | ready    |
+| S-01 | email-password-auth               | sign up with email + password and log in                                            | —                        | FR-001, FR-002                     | done     |
 | S-02 | ai-generated-flashcards            | paste text, get AI-generated candidates, review (accept/edit/reject, bulk-accept), and save them | F-01, S-01, OpenRouter secret provisioned | US-01, FR-003, FR-004, FR-005, FR-006, FR-007 | proposed |
 | S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | proposed |
 | S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | proposed |
@@ -98,8 +98,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** F-01
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Already fully implemented per codebase baseline — Supabase Auth wired end to end (provider client, signup/signin/signout routes and forms, session middleware protecting `/dashboard`). No planning work remains; recommend a quick smoke-test verification rather than running `/10x-plan` on this item.
-- **Status:** ready
+- **Risk:** Confirmed done — user manually verified signup (user creation) and login both work end-to-end against the deployed app on 2026-09-03. Auth shipped with the starter bootstrap (`4896041 bootstrap project`); no `/10x-plan` was run, none was needed.
+- **Status:** done
 
 ### S-02: User converts pasted text into AI-generated, reviewed, saved flashcards
 
@@ -144,7 +144,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID                        | Suggested issue title                                      | Ready for `/10x-plan` | Notes                                                                 |
 | ---------- | ---------------------------------- | ------------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------ |
 | F-01       | flashcard-data-foundation         | Add flashcards + review-schedule schema with per-user RLS    | yes                    | —                                                                        |
-| S-01       | email-password-auth               | Email/password sign-up and login                             | yes                    | Already implemented per baseline — verify and close rather than re-plan. |
+| S-01       | email-password-auth               | Email/password sign-up and login                             | yes                    | Verified done by user 2026-09-03 — closed without `/10x-plan`.           |
 | S-02       | ai-generated-flashcards            | AI-generate, review, and save flashcards from pasted text     | no                     | Blocked on F-01, S-01, and OpenRouter secret provisioning.               |
 | S-03       | manage-saved-flashcards            | View, edit, and delete saved flashcards                       | no                     | Blocked on S-02.                                                         |
 | S-04       | spaced-repetition-study-session    | Study due flashcards with spaced repetition                   | no                     | Blocked on S-02.                                                         |
@@ -174,4 +174,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-(Empty on first generation.)
+- **S-01: email-password-auth** — done 2026-09-03. Signup/login verified manually by the user; GitHub #2 and Linear DEV-11 closed.
