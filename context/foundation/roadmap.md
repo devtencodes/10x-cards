@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-07
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -42,7 +42,7 @@ Manually authoring flashcards is the friction that keeps self-directed learners 
 
 | ID   | Change ID                        | Outcome (user can …)                                                              | Prerequisites          | PRD refs                          | Status   |
 | ---- | --------------------------------- | ----------------------------------------------------------------------------------- | ----------------------- | ---------------------------------- | -------- |
-| F-01 | flashcard-data-foundation         | (foundation) flashcards + review-schedule tables exist in Supabase, RLS-scoped per user | —                        | FR-006, NFR (privacy), Access Control | ready    |
+| F-01 | flashcard-data-foundation         | (foundation) flashcards + review-schedule tables exist in Supabase, RLS-scoped per user | —                        | FR-006, NFR (privacy), Access Control | in-progress |
 | S-01 | email-password-auth               | sign up with email + password and log in                                            | —                        | FR-001, FR-002                     | done     |
 | S-02 | ai-generated-flashcards            | paste text, get AI-generated candidates, review (accept/edit/reject, bulk-accept), and save them | F-01, S-01, OpenRouter secret provisioned | US-01, FR-003, FR-004, FR-005, FR-006, FR-007 | proposed |
 | S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | proposed |
@@ -85,7 +85,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Exact review-schedule field shape depends on which scheduling approach `/10x-plan` picks for S-04 — Owner: team. Block: no (schema starts minimal — due date, interval, last-reviewed timestamp — and is refined at plan time).
 - **Risk:** Sequenced first because every remaining slice writes to this table; delaying it delays all downstream work. Scope is deliberately capped to schema + RLS only — no admin tooling or abstractions beyond what S-02 needs to proceed.
-- **Status:** ready
+- **Status:** in-progress
 
 ## Slices
 
