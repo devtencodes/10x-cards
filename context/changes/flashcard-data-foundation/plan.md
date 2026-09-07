@@ -261,12 +261,12 @@ Per `context/foundation/infrastructure.md`'s risk register, a Supabase schema de
 
 #### Automated
 
-- [x] 3.1 Types file exists and is non-empty: `test -s src/db/database.types.ts`
-- [x] 3.2 Type check passes: `npx astro check`
-- [x] 3.3 Build passes: `npm run build`
-- [x] 3.4 Lint passes with the generated file excluded: `npm run lint`
-- [x] 3.5 CI runs the type-check step
+- [x] 3.1 Types file exists and is non-empty: `test -s src/db/database.types.ts` — db709d3
+- [x] 3.2 Type check passes: `npx astro check` — db709d3
+- [x] 3.3 Build passes: `npm run build` — db709d3
+- [x] 3.4 Lint passes with the generated file excluded: `npm run lint` — db709d3
+- [x] 3.5 CI runs the type-check step — db709d3
 
 #### Manual
 
-- [x] 3.6 Typed `Database` generic surfaces table/column autocomplete in `src/lib/supabase.ts`
+- [x] 3.6 Typed `Database` generic surfaces table/column autocomplete in `src/lib/supabase.ts` — db709d3
