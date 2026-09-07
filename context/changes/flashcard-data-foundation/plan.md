@@ -232,30 +232,30 @@ Per `context/foundation/infrastructure.md`'s risk register, a Supabase schema de
 
 #### Automated
 
-- [x] 1.1 Migration file exists: `ls supabase/migrations/*flashcard_data_foundation.sql`
-- [x] 1.2 Local reset applies cleanly: `npx supabase db reset`
-- [x] 1.3 `flashcards` has RLS enabled with 4 policies
+- [x] 1.1 Migration file exists: `ls supabase/migrations/*flashcard_data_foundation.sql` — 9f183f4
+- [x] 1.2 Local reset applies cleanly: `npx supabase db reset` — 9f183f4
+- [x] 1.3 `flashcards` has RLS enabled with 4 policies — 9f183f4
 
 #### Manual
 
-- [x] 1.4 Cross-user row invisibility confirmed for `flashcards`
-- [x] 1.5 Front/back length CHECK constraint rejects oversized input
+- [x] 1.4 Cross-user row invisibility confirmed for `flashcards` — 9f183f4
+- [x] 1.5 Front/back length CHECK constraint rejects oversized input — 9f183f4
 
 ### Phase 2: Review-schedules table
 
 #### Automated
 
-- [ ] 2.1 Local reset still applies cleanly with both tables: `npx supabase db reset`
-- [ ] 2.2 `review_schedules` has RLS enabled with 4 policies
-- [ ] 2.3 `flashcard_id` uniqueness enforced
-- [ ] 2.4 Rollback script exists
+- [x] 2.1 Local reset still applies cleanly with both tables: `npx supabase db reset`
+- [x] 2.2 `review_schedules` has RLS enabled with 4 policies
+- [x] 2.3 `flashcard_id` uniqueness enforced
+- [x] 2.4 Rollback script exists
 
 #### Manual
 
-- [ ] 2.5 Auto-create trigger produces a matching `review_schedules` row on flashcard insert
-- [ ] 2.6 Cross-user row invisibility confirmed for `review_schedules`
-- [ ] 2.7 Cascade delete removes `review_schedules` row when its `flashcards` row is deleted
-- [ ] 2.8 Rollback script applies cleanly and removes both tables/policies
+- [x] 2.5 Auto-create trigger produces a matching `review_schedules` row on flashcard insert
+- [x] 2.6 Cross-user row invisibility confirmed for `review_schedules`
+- [x] 2.7 Cascade delete removes `review_schedules` row when its `flashcards` row is deleted
+- [x] 2.8 Rollback script applies cleanly and removes both tables/policies
 
 ### Phase 3: TypeScript types
 
