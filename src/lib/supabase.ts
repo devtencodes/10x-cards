@@ -8,7 +8,6 @@ export function createClient(requestHeaders: Headers, cookies: AstroCookies) {
     return null;
   }
 
-  
   return createServerClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
     cookies: {
       getAll() {
@@ -17,7 +16,7 @@ export function createClient(requestHeaders: Headers, cookies: AstroCookies) {
           value: value ?? "",
         }));
       },
-      
+
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value, options }) => {
           cookies.set(name, value, options);

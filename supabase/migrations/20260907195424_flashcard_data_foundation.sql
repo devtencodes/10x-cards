@@ -6,6 +6,7 @@
 create function public.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = now();
@@ -82,6 +83,7 @@ create trigger set_review_schedules_updated_at
 create function public.create_review_schedule_for_flashcard()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   insert into public.review_schedules (flashcard_id, user_id)
