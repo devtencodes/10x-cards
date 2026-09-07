@@ -245,28 +245,28 @@ Per `context/foundation/infrastructure.md`'s risk register, a Supabase schema de
 
 #### Automated
 
-- [x] 2.1 Local reset still applies cleanly with both tables: `npx supabase db reset`
-- [x] 2.2 `review_schedules` has RLS enabled with 4 policies
-- [x] 2.3 `flashcard_id` uniqueness enforced
-- [x] 2.4 Rollback script exists
+- [x] 2.1 Local reset still applies cleanly with both tables: `npx supabase db reset` — 9ceb37b
+- [x] 2.2 `review_schedules` has RLS enabled with 4 policies — 9ceb37b
+- [x] 2.3 `flashcard_id` uniqueness enforced — 9ceb37b
+- [x] 2.4 Rollback script exists — 9ceb37b
 
 #### Manual
 
-- [x] 2.5 Auto-create trigger produces a matching `review_schedules` row on flashcard insert
-- [x] 2.6 Cross-user row invisibility confirmed for `review_schedules`
-- [x] 2.7 Cascade delete removes `review_schedules` row when its `flashcards` row is deleted
-- [x] 2.8 Rollback script applies cleanly and removes both tables/policies
+- [x] 2.5 Auto-create trigger produces a matching `review_schedules` row on flashcard insert — 9ceb37b
+- [x] 2.6 Cross-user row invisibility confirmed for `review_schedules` — 9ceb37b
+- [x] 2.7 Cascade delete removes `review_schedules` row when its `flashcards` row is deleted — 9ceb37b
+- [x] 2.8 Rollback script applies cleanly and removes both tables/policies — 9ceb37b
 
 ### Phase 3: TypeScript types
 
 #### Automated
 
-- [ ] 3.1 Types file exists and is non-empty: `test -s src/db/database.types.ts`
-- [ ] 3.2 Type check passes: `npx astro check`
-- [ ] 3.3 Build passes: `npm run build`
-- [ ] 3.4 Lint passes with the generated file excluded: `npm run lint`
-- [ ] 3.5 CI runs the type-check step
+- [x] 3.1 Types file exists and is non-empty: `test -s src/db/database.types.ts`
+- [x] 3.2 Type check passes: `npx astro check`
+- [x] 3.3 Build passes: `npm run build`
+- [x] 3.4 Lint passes with the generated file excluded: `npm run lint`
+- [x] 3.5 CI runs the type-check step
 
 #### Manual
 
-- [ ] 3.6 Typed `Database` generic surfaces table/column autocomplete in `src/lib/supabase.ts`
+- [x] 3.6 Typed `Database` generic surfaces table/column autocomplete in `src/lib/supabase.ts`
