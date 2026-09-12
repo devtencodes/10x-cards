@@ -15,7 +15,8 @@ interface CardInput {
 }
 
 function isValidField(value: unknown): value is string {
-  return typeof value === "string" && value.length >= MIN_FIELD_LENGTH && value.length <= MAX_FIELD_LENGTH;
+  // Reject whitespace-only content while still enforcing the DB's raw char_length cap.
+  return typeof value === "string" && value.trim().length >= MIN_FIELD_LENGTH && value.length <= MAX_FIELD_LENGTH;
 }
 
 function isValidSource(value: unknown): value is CardSource {
@@ -72,5 +73,5 @@ export const POST: APIRoute = async (context) => {
     return Response.json({ error: "Save failed. Please try again." }, { status: 500 });
   }
 
-  return Response.json({ saved: cards.length }, { status: 200 });
+  return Response.json({ saved: cards.length }, { status: 201 });
 };

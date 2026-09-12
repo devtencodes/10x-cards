@@ -134,7 +134,7 @@ Add `POST /api/flashcards/save`, the endpoint the review UI calls once the user 
 
 **Intent**: Persist the user's accepted (and possibly edited) candidates as `flashcards` rows in one atomic operation; `review_schedules` rows are created automatically by the existing F-01 trigger.
 
-**Contract**: `POST` handler. Returns `401 { error: "Unauthorized" }` if `context.locals.user` is absent. Obtains the request-scoped client via `createClient(context.request.headers, context.cookies)` (same call as `signup.ts`/`signin.ts`) — this is the RLS-scoped, typed client used below, not something read off `locals`. Reads `{ cards: { front: string; back: string; source: "ai_generated" | "ai_edited" }[] }` from the JSON body. Returns `400 { error: <message> }` if `cards` is missing, empty, has more than 20 entries, or any entry fails validation (`front`/`back` length 1–2000 — matching the DB's own CHECK constraints — or `source` not one of the two allowed values). On valid input, performs one `supabase.from("flashcards").insert(cards.map(c => ({ ...c, user_id: locals.user.id })))` call (a single multi-row `INSERT` — see Critical Implementation Details for the atomicity argument). On success returns `200 { saved: <count> }`. On a DB-level failure (e.g. a constraint violation that server-side validation didn't already catch) returns a generic `500 { error: "Save failed. Please try again." }` — the whole batch fails together, nothing partially saved.
+**Contract**: `POST` handler. Returns `401 { error: "Unauthorized" }` if `context.locals.user` is absent. Obtains the request-scoped client via `createClient(context.request.headers, context.cookies)` (same call as `signup.ts`/`signin.ts`) — this is the RLS-scoped, typed client used below, not something read off `locals`. Reads `{ cards: { front: string; back: string; source: "ai_generated" | "ai_edited" }[] }` from the JSON body. Returns `400 { error: <message> }` if `cards` is missing, empty, has more than 20 entries, or any entry fails validation (`front`/`back` length 1–2000 — matching the DB's own CHECK constraints — or `source` not one of the two allowed values). On valid input, performs one `supabase.from("flashcards").insert(cards.map(c => ({ ...c, user_id: locals.user.id })))` call (a single multi-row `INSERT` — see Critical Implementation Details for the atomicity argument). On success returns `201 { saved: <count> }` (a resource-creation endpoint — updated from the original `200` during Phase 2 review, see impl-review-phase-2.md F3). On a DB-level failure (e.g. a constraint violation that server-side validation didn't already catch) returns a generic `500 { error: "Save failed. Please try again." }` — the whole batch fails together, nothing partially saved.
 
 ### Success Criteria:
 
@@ -146,7 +146,7 @@ Add `POST /api/flashcards/save`, the endpoint the review UI calls once the user 
 
 #### Manual Verification:
 
-- With a valid session, POSTing 1–20 well-formed cards returns `200` with the correct `saved` count, and querying `flashcards`/`review_schedules` as that user (e.g. via `psql`/Studio) shows the rows with matching `source` values and auto-created schedule rows.
+- With a valid session, POSTing 1–20 well-formed cards returns `201` with the correct `saved` count, and querying `flashcards`/`review_schedules` as that user (e.g. via `psql`/Studio) shows the rows with matching `source` values and auto-created schedule rows.
 - The same request without a session returns `401`.
 - A request with an empty `cards` array, more than 20 cards, or a card with `front`/`back` over 2000 characters returns `400` and inserts nothing.
 - As a second test user, confirm the first user's newly saved cards are invisible (RLS still enforced — no new policy touched this phase, but worth reconfirming against real writes through this new code path).
@@ -331,16 +331,16 @@ No schema changes — this plan only adds application code against F-01's existi
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx astro check`
-- [x] 2.2 Build passes: `npm run build`
-- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx astro check` — d2bf9fe
+- [x] 2.2 Build passes: `npm run build` — d2bf9fe
+- [x] 2.3 Linting passes: `npm run lint` — d2bf9fe
 
 #### Manual
 
-- [x] 2.4 Valid save request returns 200 with correct count; rows + auto-created schedules confirmed in DB
-- [x] 2.5 Unauthenticated request returns 401
-- [x] 2.6 Invalid batch (empty, >20, oversized card) returns 400 and inserts nothing
-- [x] 2.7 Second test user still cannot see first user's newly saved cards
+- [x] 2.4 Valid save request returns 200 with correct count; rows + auto-created schedules confirmed in DB — d2bf9fe
+- [x] 2.5 Unauthenticated request returns 401 — d2bf9fe
+- [x] 2.6 Invalid batch (empty, >20, oversized card) returns 400 and inserts nothing — d2bf9fe
+- [x] 2.7 Second test user still cannot see first user's newly saved cards — d2bf9fe
 
 ### Phase 3: Generate + review UI
 
