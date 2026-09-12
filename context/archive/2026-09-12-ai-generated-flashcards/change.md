@@ -1,10 +1,10 @@
 ---
 change_id: ai-generated-flashcards
 title: User converts pasted text into AI-generated, reviewed, saved flashcards
-status: impl_reviewed
+status: archived
 created: 2026-09-12
 updated: 2026-09-12
-archived_at: null
+archived_at: 2026-09-12T19:59:51Z
 ---
 
 ## Notes
