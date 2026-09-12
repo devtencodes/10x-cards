@@ -362,13 +362,13 @@ No schema changes — this plan only adds application code against F-01's existi
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npx astro check`
-- [x] 4.2 Build passes: `npm run build`
-- [x] 4.3 Linting passes: `npm run lint`
+- [x] 4.1 Type checking passes: `npx astro check` — 3813790
+- [x] 4.2 Build passes: `npm run build` — 3813790
+- [x] 4.3 Linting passes: `npm run lint` — 3813790
 
 #### Manual
 
-- [ ] 4.4 Empty state shows for a fresh user with a working link to `/generate`
-- [ ] 4.5 Newly saved cards immediately visible on `/flashcards` after the Phase 3 happy path
-- [ ] 4.6 Dashboard links navigate correctly to `/generate` and `/flashcards`
-- [ ] 4.7 Signed-out visit to `/flashcards` redirects to `/auth/signin`
+- [x] 4.4 Empty state shows for a fresh user with a working link to `/generate` — 3813790
+- [x] 4.5 Newly saved cards immediately visible on `/flashcards` after the Phase 3 happy path — 3813790
+- [x] 4.6 Dashboard links navigate correctly to `/generate` and `/flashcards` — 3813790
+- [x] 4.7 Signed-out visit to `/flashcards` redirects to `/auth/signin` — 3813790
