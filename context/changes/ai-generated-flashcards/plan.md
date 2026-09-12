@@ -45,9 +45,9 @@ Four phases, backend-before-frontend: (1) the OpenRouter-backed generation API i
 
 ## Critical Implementation Details
 
-**OpenRouter model catalog rotates**: free-tier model availability and IDs change over time. This plan defaults `OPENROUTER_MODEL` to `nvidia/nemotron-3.5-lightning:free` (confirmed listed at `GET https://openrouter.ai/api/v1/models` on 2026-09-12; large context window, general-purpose). Before wiring it in, re-verify it's still listed — if not, swap the env var default to another currently-listed free-tier model; this is a config change, not a code change.
+**OpenRouter model catalog rotates**: free-tier model availability and IDs change over time. This plan defaults `OPENROUTER_MODEL` to `liquid/lfm-2.5-2.6b:free` (confirmed listed at `GET https://openrouter.ai/api/v1/models` on 2026-09-12; purpose-described for agent workflows/data extraction/RAG, 65,536-token context, output capped at 8,192 tokens). This supersedes the plan's original default, `nvidia/nemotron-3.5-lightning:free` — Phase 1 manual verification hit that model's reasoning/chain-of-thought behavior directly: identical requests produced malformed JSON at ~6.5s in one run and a hard 30s timeout in another, both consistent with unpredictable latency and non-JSON text leaking into the response content. Before wiring in either model, re-verify it's still listed — if not, swap the env var default to another currently-listed free-tier model; this is a config change, not a code change.
 
-**Structured output is best-effort, not load-bearing**: request `response_format: { type: "json_schema", ... }` when calling OpenRouter, but do not assume the model honors it. Always defensively parse the response body: strip markdown code fences if present, `JSON.parse`, validate the result is an array of `{ front: string; back: string }` objects with non-empty trimmed strings, drop malformed entries, and cap at 20. A response that yields zero valid candidates after parsing is a **successful** empty result (`{ candidates: [] }`, HTTP 200) — distinct from a response that can't be parsed as JSON at all, which is a **failure** (generic error response). The UI must handle the empty-array case gracefully (a "no candidates found, try different text" message), not treat it as an error.
+**No structured-output hint — prompt + defensive parsing only**: do not send `response_format: { type: "json_schema", ... }`. OpenRouter's own docs state that a model/route not supporting structured outputs makes **the whole request fail with an error** — that's a hard non-2xx failure, not a graceful degrade, so requesting it would trade "maybe cleaner JSON" for "this free-tier model swap silently breaks 100% of generations." Instead, instruct the desired `{ front, back }` array shape entirely via the prompt, and always defensively parse the response body: scan for the first top-level JSON array in the raw text (bracket-depth tracking that's aware of quoted strings, so it ignores any prose, code-fence markers, or — as observed in Phase 1 manual testing with a compact free-tier model — the model restating its answer more than once in the same response) and `JSON.parse` just that substring, then validate the result is an array of `{ front: string; back: string }` objects with non-empty trimmed strings, drop malformed entries, and cap at 20. A response that yields zero valid candidates after parsing is a **successful** empty result (`{ candidates: [] }`, HTTP 200) — distinct from a response that can't be parsed as JSON at all, which is a **failure** (generic error response). The UI must handle the empty-array case gracefully (a "no candidates found, try different text" message), not treat it as an error.
 
 **Auth boundary for the new JSON routes**: unlike page routes, `src/middleware.ts`'s `PROTECTED_ROUTES` redirect would break a `fetch()` caller (it'd receive sign-in page HTML, not JSON). Both new API routes must check `context.locals.user` themselves at the top of the handler and return `401` with a JSON body (`{ error: "Unauthorized" }`) — do not add `/api/flashcards/*` to `PROTECTED_ROUTES`.
 
@@ -67,7 +67,7 @@ Add OpenRouter configuration and a `POST /api/flashcards/generate` endpoint that
 
 **Intent**: Register the two new env vars the same way `SUPABASE_URL`/`SUPABASE_KEY` are already registered, so they're typed and available via `astro:env/server`.
 
-**Contract**: Add `OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret", optional: true })` and `OPENROUTER_MODEL: envField.string({ context: "server", access: "secret", optional: true, default: "nvidia/nemotron-3.5-lightning:free" })` to the existing `env.schema` object.
+**Contract**: Add `OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret", optional: true })` and `OPENROUTER_MODEL: envField.string({ context: "server", access: "secret", optional: true, default: "liquid/lfm-2.5-2.6b:free" })` to the existing `env.schema` object.
 
 #### 2. Local env example
 
@@ -75,7 +75,7 @@ Add OpenRouter configuration and a `POST /api/flashcards/generate` endpoint that
 
 **Intent**: Document the two new vars for local setup, matching the existing `SUPABASE_URL`/`SUPABASE_KEY` placeholder style.
 
-**Contract**: Append `OPENROUTER_API_KEY=###` and `OPENROUTER_MODEL=nvidia/nemotron-3.5-lightning:free`.
+**Contract**: Append `OPENROUTER_API_KEY=###` and `OPENROUTER_MODEL=liquid/lfm-2.5-2.6b:free`.
 
 #### 3. Config status banner entry
 
@@ -91,7 +91,7 @@ Add OpenRouter configuration and a `POST /api/flashcards/generate` endpoint that
 
 **Intent**: Isolate the raw-fetch call to OpenRouter and the defensive response parsing so the API route stays thin. Exports one function: `generateFlashcardCandidates(text: string): Promise<{ front: string; back: string }[]>`.
 
-**Contract**: POSTs to `https://openrouter.ai/api/v1/chat/completions` with `Authorization: Bearer ${OPENROUTER_API_KEY}`, `model: OPENROUTER_MODEL`, a prompt instructing the model to extract distinct facts/concepts from the given text and return a JSON array of `{ front, back }` question/answer pairs (question in `front`, answer in `back`), capped at 20 items, in the source text's language. Includes `response_format: { type: "json_schema", json_schema: { name: "flashcard_candidates", strict: true, schema: <array-of-front/back-objects schema> } }` as a best-effort hint (see Critical Implementation Details — do not assume it's honored). Uses `AbortSignal.timeout(30000)` for the 30s hard timeout (no retry). On any failure (non-2xx response, timeout/abort, or a response body that can't be parsed into valid candidates at all), throws a single typed error (e.g. `GenerationError`) that the route handler catches uniformly. On success, returns the parsed, validated, capped-at-20 array (which may be empty — see Critical Implementation Details).
+**Contract**: POSTs to `https://openrouter.ai/api/v1/chat/completions` with `Authorization: Bearer ${OPENROUTER_API_KEY}`, `model: OPENROUTER_MODEL`, a prompt instructing the model to extract distinct facts/concepts from the given text and return a JSON array of `{ front, back }` question/answer pairs (question in `front`, answer in `back`), capped at 20 items, in the source text's language. No `response_format` is sent (see Critical Implementation Details — a model/route not supporting structured outputs fails the whole request, so the array shape is prompt-instructed only and enforced by defensive parsing — first-JSON-array extraction, not just fence-stripping — on the way back). Uses `AbortSignal.timeout(30000)` for the 30s hard timeout (no retry). On any failure (non-2xx response, timeout/abort, or a response body that can't be parsed into valid candidates at all), throws a single typed error (e.g. `GenerationError`) that the route handler catches uniformly. On success, returns the parsed, validated, capped-at-20 array (which may be empty — see Critical Implementation Details).
 
 #### 5. Generate API route
 
@@ -134,7 +134,7 @@ Add `POST /api/flashcards/save`, the endpoint the review UI calls once the user 
 
 **Intent**: Persist the user's accepted (and possibly edited) candidates as `flashcards` rows in one atomic operation; `review_schedules` rows are created automatically by the existing F-01 trigger.
 
-**Contract**: `POST` handler. Returns `401 { error: "Unauthorized" }` if `context.locals.user` is absent. Reads `{ cards: { front: string; back: string; source: "ai_generated" | "ai_edited" }[] }` from the JSON body. Returns `400 { error: <message> }` if `cards` is missing, empty, has more than 20 entries, or any entry fails validation (`front`/`back` length 1–2000 — matching the DB's own CHECK constraints — or `source` not one of the two allowed values). On valid input, performs one `supabase.from("flashcards").insert(cards.map(c => ({ ...c, user_id: locals.user.id })))` call (a single multi-row `INSERT` — see Critical Implementation Details for the atomicity argument) using the typed server client. On success returns `200 { saved: <count> }`. On a DB-level failure (e.g. a constraint violation that server-side validation didn't already catch) returns a generic `500 { error: "Save failed. Please try again." }` — the whole batch fails together, nothing partially saved.
+**Contract**: `POST` handler. Returns `401 { error: "Unauthorized" }` if `context.locals.user` is absent. Obtains the request-scoped client via `createClient(context.request.headers, context.cookies)` (same call as `signup.ts`/`signin.ts`) — this is the RLS-scoped, typed client used below, not something read off `locals`. Reads `{ cards: { front: string; back: string; source: "ai_generated" | "ai_edited" }[] }` from the JSON body. Returns `400 { error: <message> }` if `cards` is missing, empty, has more than 20 entries, or any entry fails validation (`front`/`back` length 1–2000 — matching the DB's own CHECK constraints — or `source` not one of the two allowed values). On valid input, performs one `supabase.from("flashcards").insert(cards.map(c => ({ ...c, user_id: locals.user.id })))` call (a single multi-row `INSERT` — see Critical Implementation Details for the atomicity argument). On success returns `200 { saved: <count> }`. On a DB-level failure (e.g. a constraint violation that server-side validation didn't already catch) returns a generic `500 { error: "Save failed. Please try again." }` — the whole batch fails together, nothing partially saved.
 
 ### Success Criteria:
 
@@ -167,7 +167,7 @@ The paste → generate → review (accept/edit/reject/bulk-accept) → save flow
 
 **File**: `src/pages/generate.astro` (new)
 
-**Intent**: Host the `GenerateFlow` React island inside the existing `Layout` + cosmic-gradient card container style (matching `signup.astro`/`dashboard.astro`).
+**Intent**: Host the `GenerateFlow` React island inside the existing `Layout` + cosmic-gradient card container style (matching `src/pages/auth/signup.astro`/`dashboard.astro`).
 
 **Contract**: Renders `<Layout title="Generate flashcards">` wrapping `<GenerateFlow client:load />`.
 
@@ -237,7 +237,7 @@ Close the loop: a read-only list page satisfying US-01's "immediately visible in
 
 **Intent**: Show the signed-in user's saved flashcards, newest first. Read-only for this slice — editing/deleting is S-03's job, which will extend this same file rather than replace it.
 
-**Contract**: Server-side query in the frontmatter: `supabase.from("flashcards").select("id, front, created_at").order("created_at", { ascending: false })` (no explicit `user_id` filter needed — RLS already scopes to `auth.uid() = user_id`). Renders each row's `front` text (truncated if long) and `created_at` date in the existing card/list visual style. Shows an empty-state message ("No flashcards yet — Generate some") linking to `/generate` when the query returns zero rows.
+**Contract**: In the frontmatter, obtain the request-scoped client via `createClient(Astro.request.headers, Astro.cookies)` — no existing `.astro` page queries data yet, so there's no client already in scope; if it returns `null` (Supabase not configured), skip the query and rely on the existing config-status banner rather than querying. Otherwise run `supabase.from("flashcards").select("id, front, created_at").order("created_at", { ascending: false })` (no explicit `user_id` filter needed — RLS already scopes to `auth.uid() = user_id`). Renders each row's `front` text (truncated if long) and `created_at` date in the existing card/list visual style. Shows an empty-state message ("No flashcards yet — Generate some") linking to `/generate` when the query returns zero rows.
 
 #### 2. Protected route registration
 
@@ -316,16 +316,16 @@ No schema changes — this plan only adds application code against F-01's existi
 
 #### Automated
 
-- [ ] 1.1 Type checking passes: `npx astro check`
-- [ ] 1.2 Build passes: `npm run build`
-- [ ] 1.3 Linting passes: `npm run lint`
+- [x] 1.1 Type checking passes: `npx astro check`
+- [x] 1.2 Build passes: `npm run build`
+- [x] 1.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 1.4 Valid request returns 200 with well-formed candidates
-- [ ] 1.5 Unauthenticated request returns 401
-- [ ] 1.6 Out-of-range text length returns 400
-- [ ] 1.7 Upstream/auth failure returns the generic failure response, not a hang or raw 500
+- [x] 1.4 Valid request returns 200 with well-formed candidates
+- [x] 1.5 Unauthenticated request returns 401
+- [x] 1.6 Out-of-range text length returns 400
+- [x] 1.7 Upstream/auth failure returns the generic failure response, not a hang or raw 500
 
 ### Phase 2: Flashcard save API
 

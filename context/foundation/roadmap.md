@@ -44,7 +44,7 @@ Manually authoring flashcards is the friction that keeps self-directed learners 
 | ---- | --------------------------------- | ----------------------------------------------------------------------------------- | ----------------------- | ---------------------------------- | -------- |
 | F-01 | flashcard-data-foundation         | (foundation) flashcards + review-schedule tables exist in Supabase, RLS-scoped per user | —                        | FR-006, NFR (privacy), Access Control | done |
 | S-01 | email-password-auth               | sign up with email + password and log in                                            | —                        | FR-001, FR-002                     | done     |
-| S-02 | ai-generated-flashcards            | paste text, get AI-generated candidates, review (accept/edit/reject, bulk-accept), and save them | F-01, S-01, OpenRouter secret provisioned | US-01, FR-003, FR-004, FR-005, FR-006, FR-007 | planning |
+| S-02 | ai-generated-flashcards            | paste text, get AI-generated candidates, review (accept/edit/reject, bulk-accept), and save them | F-01, S-01, OpenRouter secret provisioned | US-01, FR-003, FR-004, FR-005, FR-006, FR-007 | in-progress |
 | S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | proposed |
 | S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | proposed |
 
@@ -111,7 +111,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** — (resolved at plan time: OpenRouter raw fetch, model configurable via `OPENROUTER_MODEL` env var defaulting to a free-tier model given the account's $0.00 budget — see `context/changes/ai-generated-flashcards/plan.md`)
 - **Risk:** This is the north star, placed as early as F-01/S-01 allow. It's also the largest remaining slice (LLM integration + review UI + persistence) against a 7-day, after-hours-only window — keep the implementation to the PRD's stated acceptance criteria only; no extra polish until this ships.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-03: User can manage saved flashcards
 
