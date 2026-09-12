@@ -45,8 +45,8 @@ Manually authoring flashcards is the friction that keeps self-directed learners 
 | F-01 | flashcard-data-foundation         | (foundation) flashcards + review-schedule tables exist in Supabase, RLS-scoped per user | —                        | FR-006, NFR (privacy), Access Control | done |
 | S-01 | email-password-auth               | sign up with email + password and log in                                            | —                        | FR-001, FR-002                     | done     |
 | S-02 | ai-generated-flashcards            | paste text, get AI-generated candidates, review (accept/edit/reject, bulk-accept), and save them | F-01, S-01, OpenRouter secret provisioned | US-01, FR-003, FR-004, FR-005, FR-006, FR-007 | done |
-| S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | proposed |
-| S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | proposed |
+| S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | ready |
+| S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | ready |
 
 ## Streams
 
@@ -123,7 +123,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Off the critical path per the PRD's own scope note ("supporting requirement, off the critical path"). Mostly CRUD against the schema F-01 already established — low risk.
-- **Status:** proposed
+- **Status:** ready
 
 ### S-04: User studies due flashcards via spaced repetition
 
@@ -136,7 +136,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Which existing scheduling approach/library to integrate is an implementation choice for `/10x-plan` (PRD Non-Goals rules out building a custom one) — Owner: team. Block: no.
 - **Risk:** Ties to the secondary success criterion (7-day return). Needs real saved cards to operate on, so it's sequenced after S-02; can run in parallel with S-03 since neither depends on the other.
-- **Status:** proposed
+- **Status:** ready
 
 ## Backlog Handoff
 
@@ -145,8 +145,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-01       | flashcard-data-foundation         | Add flashcards + review-schedule schema with per-user RLS    | yes                    | —                                                                        |
 | S-01       | email-password-auth               | Email/password sign-up and login                             | yes                    | Verified done by user 2026-09-03 — closed without `/10x-plan`.           |
 | S-02       | ai-generated-flashcards            | AI-generate, review, and save flashcards from pasted text     | yes                    | F-01, S-01 done; OpenRouter secret confirmed provisioned 2026-09-12.     |
-| S-03       | manage-saved-flashcards            | View, edit, and delete saved flashcards                       | no                     | Blocked on S-02.                                                         |
-| S-04       | spaced-repetition-study-session    | Study due flashcards with spaced repetition                   | no                     | Blocked on S-02.                                                         |
+| S-03       | manage-saved-flashcards            | View, edit, and delete saved flashcards                       | yes                    | S-02, F-01 done — unblocked 2026-09-12.                                  |
+| S-04       | spaced-repetition-study-session    | Study due flashcards with spaced repetition                   | yes                    | S-02, F-01 done — unblocked 2026-09-12.                                  |
 
 ## Open Roadmap Questions
 
@@ -166,6 +166,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Search/filter on the flashcard list** — Why parked: PRD non-goal; deferred to v1.1, v1 ships a flat chronological list.
 - **De-duplication checking on saved cards** — Why parked: PRD non-goal; deferred to v1.1.
 - **App-level logging/error tracking (Sentry, structured logs)** — Why parked: baseline reports this absent, but no slice's Unlocks require it — the PRD's failure-feedback NFR is a UI-level requirement (clear message to the user), not an infra-level one. Revisit post-MVP if debugging production issues blind becomes painful.
+- **Landing page + polished login/dashboard UI** — Why parked: not in v1 PRD scope; every M-1 slice deliberately deferred visual polish given the deadline pressure ("no extra polish until this ships"). Not yet a roadmap slice — it has no source-anchor (FR/US) in the current PRD to trace to. Revisit as the first candidate milestone (or slice within one) once M-1 closes: re-invoke `/10x-roadmap` with a self-description of the desired outcome (or an updated PRD) so it gets a proper decomposition instead of being invented ad hoc.
 
 ## Milestone History
 
