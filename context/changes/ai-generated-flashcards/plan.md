@@ -331,16 +331,16 @@ No schema changes — this plan only adds application code against F-01's existi
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx astro check`
-- [ ] 2.2 Build passes: `npm run build`
-- [ ] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx astro check`
+- [x] 2.2 Build passes: `npm run build`
+- [x] 2.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 Valid save request returns 200 with correct count; rows + auto-created schedules confirmed in DB
-- [ ] 2.5 Unauthenticated request returns 401
-- [ ] 2.6 Invalid batch (empty, >20, oversized card) returns 400 and inserts nothing
-- [ ] 2.7 Second test user still cannot see first user's newly saved cards
+- [x] 2.4 Valid save request returns 200 with correct count; rows + auto-created schedules confirmed in DB
+- [x] 2.5 Unauthenticated request returns 401
+- [x] 2.6 Invalid batch (empty, >20, oversized card) returns 400 and inserts nothing
+- [x] 2.7 Second test user still cannot see first user's newly saved cards
 
 ### Phase 3: Generate + review UI
 
