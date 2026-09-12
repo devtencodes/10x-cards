@@ -106,7 +106,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** user pastes source text (100–10,000 characters), triggers AI generation, reviews each candidate (accept, edit, or reject — plus a bulk accept-all), and accepted cards are saved and immediately visible in their flashcard list.
 - **Change ID:** ai-generated-flashcards
 - **PRD refs:** US-01, FR-003, FR-004, FR-005, FR-006, FR-007 (minimal immediate-visibility slice; full browse/edit/delete lands in S-03)
-- **Prerequisites:** F-01, S-01, external state: `OPENROUTER_API_KEY` secret provisioned in Cloudflare Workers (per `context/deployment/deploy-plan.md`, not yet provisioned — the account holder can do this directly, it's not pending on anyone else)
+- **Prerequisites:** F-01 (done), S-01 (done), external state: `OPENROUTER_API_KEY` secret provisioned in Cloudflare Workers (confirmed provisioned 2026-09-12 via `wrangler secret list --name 10x-cards`) — all three now clear
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:**
@@ -145,7 +145,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | ---------- | ---------------------------------- | ------------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------ |
 | F-01       | flashcard-data-foundation         | Add flashcards + review-schedule schema with per-user RLS    | yes                    | —                                                                        |
 | S-01       | email-password-auth               | Email/password sign-up and login                             | yes                    | Verified done by user 2026-09-03 — closed without `/10x-plan`.           |
-| S-02       | ai-generated-flashcards            | AI-generate, review, and save flashcards from pasted text     | no                     | Blocked on F-01, S-01, and OpenRouter secret provisioning.               |
+| S-02       | ai-generated-flashcards            | AI-generate, review, and save flashcards from pasted text     | yes                    | F-01, S-01 done; OpenRouter secret confirmed provisioned 2026-09-12.     |
 | S-03       | manage-saved-flashcards            | View, edit, and delete saved flashcards                       | no                     | Blocked on S-02.                                                         |
 | S-04       | spaced-repetition-study-session    | Study due flashcards with spaced repetition                   | no                     | Blocked on S-02.                                                         |
 
