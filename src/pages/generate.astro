@@ -1,0 +1,20 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import GenerateFlow from "@/components/flashcards/GenerateFlow";
+---
+
+<Layout title="Generate flashcards">
+  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
+    <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+      <a href="/dashboard" class="mb-4 inline-flex items-center gap-1 text-sm text-blue-100/60 hover:text-white">
+        &larr; Dashboard
+      </a>
+      <h1
+        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
+      >
+        Generate flashcards
+      </h1>
+      <GenerateFlow client:load />
+    </div>
+  </div>
+</Layout>

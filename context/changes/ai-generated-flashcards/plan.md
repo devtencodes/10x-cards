@@ -346,9 +346,9 @@ No schema changes — this plan only adds application code against F-01's existi
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx astro check`
-- [ ] 3.2 Build passes: `npm run build`
-- [ ] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npx astro check`
+- [x] 3.2 Build passes: `npm run build`
+- [x] 3.3 Linting passes: `npm run lint`
 
 #### Manual
 
