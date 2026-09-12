@@ -346,25 +346,25 @@ No schema changes — this plan only adds application code against F-01's existi
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx astro check`
-- [x] 3.2 Build passes: `npm run build`
-- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npx astro check` — 553e11d
+- [x] 3.2 Build passes: `npm run build` — 553e11d
+- [x] 3.3 Linting passes: `npm run lint` — 553e11d
 
 #### Manual
 
-- [ ] 3.4 Out-of-range text shows inline validation, no API call made
-- [ ] 3.5 Full happy path (generate → edit → reject → accept-all → save) succeeds and redirects to `/flashcards`
-- [ ] 3.6 Edited candidate saves as `ai_edited`; untouched accepted candidates save as `ai_generated`; rejected candidate not saved
-- [ ] 3.7 Generation failure shows generic message with working retry
-- [ ] 3.8 Signed-out visit to `/generate` redirects to `/auth/signin`
+- [x] 3.4 Out-of-range text shows inline validation, no API call made — 553e11d
+- [x] 3.5 Full happy path (generate → edit → reject → accept-all → save) succeeds and redirects to `/flashcards` — 553e11d
+- [x] 3.6 Edited candidate saves as `ai_edited`; untouched accepted candidates save as `ai_generated`; rejected candidate not saved — 553e11d
+- [x] 3.7 Generation failure shows generic message with working retry — 553e11d
+- [x] 3.8 Signed-out visit to `/generate` redirects to `/auth/signin` — 553e11d
 
 ### Phase 4: Minimal flashcard list + navigation
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx astro check`
-- [ ] 4.2 Build passes: `npm run build`
-- [ ] 4.3 Linting passes: `npm run lint`
+- [x] 4.1 Type checking passes: `npx astro check`
+- [x] 4.2 Build passes: `npm run build`
+- [x] 4.3 Linting passes: `npm run lint`
 
 #### Manual
 

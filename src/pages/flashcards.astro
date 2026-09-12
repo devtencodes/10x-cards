@@ -1,0 +1,57 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+let cards: { id: string; front: string; created_at: string }[] = [];
+if (supabase) {
+  const { data } = await supabase
+    .from("flashcards")
+    .select("id, front, created_at")
+    .order("created_at", { ascending: false });
+  cards = data ?? [];
+}
+
+const MAX_PREVIEW_LENGTH = 120;
+function truncate(text: string) {
+  return text.length > MAX_PREVIEW_LENGTH ? `${text.slice(0, MAX_PREVIEW_LENGTH)}…` : text;
+}
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", { dateStyle: "medium" });
+---
+
+<Layout title="My flashcards">
+  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
+    <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+      <a href="/dashboard" class="mb-4 inline-flex items-center gap-1 text-sm text-blue-100/60 hover:text-white">
+        &larr; Dashboard
+      </a>
+      <h1
+        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
+      >
+        My flashcards
+      </h1>
+
+      {
+        cards.length === 0 ? (
+          <p class="text-center text-sm text-blue-100/60">
+            No flashcards yet —{" "}
+            <a href="/generate" class="text-purple-300 hover:underline">
+              Generate some
+            </a>
+          </p>
+        ) : (
+          <ul class="space-y-3">
+            {cards.map((card) => (
+              <li class="rounded-xl border border-white/15 bg-white/10 p-4">
+                <p class="text-sm text-white">{truncate(card.front)}</p>
+                <p class="mt-2 text-xs text-blue-100/50">{dateFormatter.format(new Date(card.created_at))}</p>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</Layout>
