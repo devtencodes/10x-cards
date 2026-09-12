@@ -316,16 +316,16 @@ No schema changes — this plan only adds application code against F-01's existi
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx astro check`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.1 Type checking passes: `npx astro check` — af57b39
+- [x] 1.2 Build passes: `npm run build` — af57b39
+- [x] 1.3 Linting passes: `npm run lint` — af57b39
 
 #### Manual
 
-- [x] 1.4 Valid request returns 200 with well-formed candidates
-- [x] 1.5 Unauthenticated request returns 401
-- [x] 1.6 Out-of-range text length returns 400
-- [x] 1.7 Upstream/auth failure returns the generic failure response, not a hang or raw 500
+- [x] 1.4 Valid request returns 200 with well-formed candidates — af57b39
+- [x] 1.5 Unauthenticated request returns 401 — af57b39
+- [x] 1.6 Out-of-range text length returns 400 — af57b39
+- [x] 1.7 Upstream/auth failure returns the generic failure response, not a hang or raw 500 — af57b39
 
 ### Phase 2: Flashcard save API
 

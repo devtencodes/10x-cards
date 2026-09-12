@@ -21,7 +21,7 @@ export default defineConfig({
       OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       OPENROUTER_MODEL: envField.string({
         context: "server",
-        access: "secret",
+        access: "public",
         optional: true,
         default: "liquid/lfm-2.5-2.6b:free",
       }),

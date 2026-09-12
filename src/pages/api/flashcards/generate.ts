@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { OPENROUTER_API_KEY } from "astro:env/server";
 import { generateFlashcardCandidates, GenerationError } from "@/lib/openrouter";
 
 const MIN_TEXT_LENGTH = 100;
@@ -7,6 +8,10 @@ const MAX_TEXT_LENGTH = 10_000;
 export const POST: APIRoute = async (context) => {
   if (!context.locals.user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!OPENROUTER_API_KEY) {
+    return Response.json({ error: "AI generation is not configured." }, { status: 503 });
   }
 
   let body: unknown;

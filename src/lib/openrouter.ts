@@ -3,6 +3,8 @@ import { OPENROUTER_API_KEY, OPENROUTER_MODEL } from "astro:env/server";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MAX_CANDIDATES = 20;
 const TIMEOUT_MS = 30_000;
+/** Cap on how much raw model output (which echoes the user's source text) reaches logs on a parse failure. */
+const LOG_PREVIEW_LENGTH = 500;
 
 export interface FlashcardCandidate {
   front: string;
@@ -99,7 +101,7 @@ function isCandidate(value: unknown): value is FlashcardCandidate {
 function parseCandidates(raw: string): FlashcardCandidate[] {
   const arrayText = extractFirstJsonArray(raw);
   if (arrayText === null) {
-    console.error("Raw model content had no JSON array:", JSON.stringify(raw));
+    console.error("Raw model content had no JSON array:", JSON.stringify(raw.slice(0, LOG_PREVIEW_LENGTH)));
     throw new GenerationError("Model response contained no JSON array");
   }
 
@@ -107,7 +109,7 @@ function parseCandidates(raw: string): FlashcardCandidate[] {
   try {
     parsed = JSON.parse(arrayText);
   } catch (error) {
-    console.error("Raw model content that failed to parse:", JSON.stringify(raw));
+    console.error("Raw model content that failed to parse:", JSON.stringify(raw.slice(0, LOG_PREVIEW_LENGTH)));
     throw new GenerationError("Model response was not valid JSON", { cause: error });
   }
 
