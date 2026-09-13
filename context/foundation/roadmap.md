@@ -46,7 +46,7 @@ Manually authoring flashcards is the friction that keeps self-directed learners 
 | S-01 | email-password-auth               | sign up with email + password and log in                                            | —                        | FR-001, FR-002                     | done     |
 | S-02 | ai-generated-flashcards            | paste text, get AI-generated candidates, review (accept/edit/reject, bulk-accept), and save them | F-01, S-01, OpenRouter secret provisioned | US-01, FR-003, FR-004, FR-005, FR-006, FR-007 | done |
 | S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | done |
-| S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | in-progress |
+| S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | done |
 
 ## Streams
 
@@ -136,7 +136,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Which existing scheduling approach/library to integrate is an implementation choice for `/10x-plan` (PRD Non-Goals rules out building a custom one) — Owner: team. Block: no.
 - **Risk:** Ties to the secondary success criterion (7-day return). Needs real saved cards to operate on, so it's sequenced after S-02; can run in parallel with S-03 since neither depends on the other.
-- **Status:** in-progress
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -178,3 +178,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **F-01: (foundation) flashcards and review-schedule tables exist in Supabase (migration committed), scoped to the owning user via RLS policies.** — Archived 2026-09-12 → `context/archive/2026-09-07-flashcard-data-foundation/`. Lesson: —.
 - **S-02: user pastes source text (100–10,000 characters), triggers AI generation, reviews each candidate (accept, edit, or reject — plus a bulk accept-all), and accepted cards are saved and immediately visible in their flashcard list.** — Archived 2026-09-12 → `context/archive/2026-09-12-ai-generated-flashcards/`. Lesson: —.
 - **S-03: user can view their saved flashcards, edit a card (which resets its review schedule to "new"), and delete a card after a confirmation step.** — Archived 2026-09-13 → `context/archive/2026-09-13-manage-saved-flashcards/`. Lesson: —.
+- **S-04: user can start a study session that surfaces cards due per the review schedule (with an explanatory empty-state when none are due) and rate recall with a binary "remembered"/"forgot" rating, which reschedules the next review.** — Archived 2026-09-13 → `context/archive/2026-09-13-spaced-repetition-study-session/`. Lesson: —.
