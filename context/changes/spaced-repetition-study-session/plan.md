@@ -225,19 +225,19 @@ No migration in this plan — F-01's `review_schedules` schema (shipped 2026-09-
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx astro check`
-- [x] 2.2 Build passes: `npm run build`
-- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx astro check` — 0cdbd90
+- [x] 2.2 Build passes: `npm run build` — 0cdbd90
+- [x] 2.3 Linting passes: `npm run lint` — 0cdbd90
 
 #### Manual
 
-- [x] 2.4 Due card shows front + "Show answer"; back hidden before reveal
-- [x] 2.5 Reveal shows back + Remembered/Forgot controls
-- [x] 2.6 Remembered advances the session and updates the schedule per Phase 1
-- [x] 2.7 Forgot advances immediately and the card reappears later in the same session
-- [x] 2.8 Session completion shows the "All done" message
-- [x] 2.9 Zero cards due at load shows "All done" immediately, no reveal/rate controls
-- [x] 2.10 "Remaining" indicator decrements/increments correctly
-- [x] 2.11 A forced rating failure shows an inline error and doesn't lose/skip the card
-- [x] 2.12 Dashboard "Study" link works
-- [x] 2.13 Signed-out visit to `/study` redirects to `/auth/signin`
+- [x] 2.4 Due card shows front + "Show answer"; back hidden before reveal — 0cdbd90
+- [x] 2.5 Reveal shows back + Remembered/Forgot controls — 0cdbd90
+- [x] 2.6 Remembered advances the session and updates the schedule per Phase 1 — 0cdbd90
+- [x] 2.7 Forgot advances immediately and the card reappears later in the same session — 0cdbd90
+- [x] 2.8 Session completion shows the "All done" message — 0cdbd90
+- [x] 2.9 Zero cards due at load shows "All done" immediately, no reveal/rate controls — 0cdbd90
+- [x] 2.10 "Remaining" indicator decrements/increments correctly — 0cdbd90
+- [x] 2.11 A forced rating failure shows an inline error and doesn't lose/skip the card — 0cdbd90
+- [x] 2.12 Dashboard "Study" link works — 0cdbd90
+- [x] 2.13 Signed-out visit to `/study` redirects to `/auth/signin` — 0cdbd90
