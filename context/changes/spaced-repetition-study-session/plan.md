@@ -207,37 +207,37 @@ No migration in this plan — F-01's `review_schedules` schema (shipped 2026-09-
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx astro check`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.1 Type checking passes: `npx astro check` — 2c8f458
+- [x] 1.2 Build passes: `npm run build` — 2c8f458
+- [x] 1.3 Linting passes: `npm run lint` — 2c8f458
 
 #### Manual
 
-- [x] 1.4 `new` + remembered → `learning`/interval 1/due ≈ now+1d, `last_reviewed_at` stamped
-- [x] 1.5 `new` + forgot → stays `new`/interval 0/due ≈ now, `last_reviewed_at` stamped
-- [x] 1.6 `learning` + remembered → graduates to `review`/interval 1
-- [x] 1.7 `review` + remembered twice → interval grows ×2.5 each time (10→25→63)
-- [x] 1.8 `review` + forgot → full lapse to `learning`/interval 0/due ≈ now
-- [x] 1.9 Malformed rating or malformed id returns 400 and touches nothing
-- [x] 1.10 Unauthenticated POST returns 401; POST on another user's/nonexistent card returns 404
+- [x] 1.4 `new` + remembered → `learning`/interval 1/due ≈ now+1d, `last_reviewed_at` stamped — 2c8f458
+- [x] 1.5 `new` + forgot → stays `new`/interval 0/due ≈ now, `last_reviewed_at` stamped — 2c8f458
+- [x] 1.6 `learning` + remembered → graduates to `review`/interval 1 — 2c8f458
+- [x] 1.7 `review` + remembered twice → interval grows ×2.5 each time (10→25→63) — 2c8f458
+- [x] 1.8 `review` + forgot → full lapse to `learning`/interval 0/due ≈ now — 2c8f458
+- [x] 1.9 Malformed rating or malformed id returns 400 and touches nothing — 2c8f458
+- [x] 1.10 Unauthenticated POST returns 401; POST on another user's/nonexistent card returns 404 — 2c8f458
 
 ### Phase 2: Study session UI
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx astro check`
-- [ ] 2.2 Build passes: `npm run build`
-- [ ] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx astro check`
+- [x] 2.2 Build passes: `npm run build`
+- [x] 2.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 Due card shows front + "Show answer"; back hidden before reveal
-- [ ] 2.5 Reveal shows back + Remembered/Forgot controls
-- [ ] 2.6 Remembered advances the session and updates the schedule per Phase 1
-- [ ] 2.7 Forgot advances immediately and the card reappears later in the same session
-- [ ] 2.8 Session completion shows the "All done" message
-- [ ] 2.9 Zero cards due at load shows "All done" immediately, no reveal/rate controls
-- [ ] 2.10 "Remaining" indicator decrements/increments correctly
-- [ ] 2.11 A forced rating failure shows an inline error and doesn't lose/skip the card
-- [ ] 2.12 Dashboard "Study" link works
-- [ ] 2.13 Signed-out visit to `/study` redirects to `/auth/signin`
+- [x] 2.4 Due card shows front + "Show answer"; back hidden before reveal
+- [x] 2.5 Reveal shows back + Remembered/Forgot controls
+- [x] 2.6 Remembered advances the session and updates the schedule per Phase 1
+- [x] 2.7 Forgot advances immediately and the card reappears later in the same session
+- [x] 2.8 Session completion shows the "All done" message
+- [x] 2.9 Zero cards due at load shows "All done" immediately, no reveal/rate controls
+- [x] 2.10 "Remaining" indicator decrements/increments correctly
+- [x] 2.11 A forced rating failure shows an inline error and doesn't lose/skip the card
+- [x] 2.12 Dashboard "Study" link works
+- [x] 2.13 Signed-out visit to `/study` redirects to `/auth/signin`

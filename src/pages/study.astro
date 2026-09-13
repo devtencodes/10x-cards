@@ -1,0 +1,43 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import StudySession from "@/components/study/StudySession";
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+interface DueCard {
+  id: string;
+  front: string;
+  back: string;
+}
+
+let cards: DueCard[] = [];
+if (supabase) {
+  const { data } = await supabase
+    .from("review_schedules")
+    .select("flashcards(id, front, back)")
+    .lte("due_at", new Date().toISOString())
+    .order("due_at", { ascending: true });
+
+  // `flashcard_id` is `not null unique`, so the embedded relation always
+  // resolves to exactly one row — no nullable guard needed here.
+  cards = (data ?? []).map((row) => row.flashcards);
+}
+---
+
+<Layout title="Study">
+  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
+    <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+      <a href="/dashboard" class="mb-4 inline-flex items-center gap-1 text-sm text-blue-100/60 hover:text-white">
+        &larr; Dashboard
+      </a>
+      <h1
+        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
+      >
+        Study
+      </h1>
+
+      <StudySession client:load cards={cards} />
+    </div>
+  </div>
+</Layout>
