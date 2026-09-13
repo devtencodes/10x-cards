@@ -46,7 +46,7 @@ Manually authoring flashcards is the friction that keeps self-directed learners 
 | S-01 | email-password-auth               | sign up with email + password and log in                                            | —                        | FR-001, FR-002                     | done     |
 | S-02 | ai-generated-flashcards            | paste text, get AI-generated candidates, review (accept/edit/reject, bulk-accept), and save them | F-01, S-01, OpenRouter secret provisioned | US-01, FR-003, FR-004, FR-005, FR-006, FR-007 | done |
 | S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | done |
-| S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | ready |
+| S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | in-progress |
 
 ## Streams
 
@@ -136,7 +136,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Which existing scheduling approach/library to integrate is an implementation choice for `/10x-plan` (PRD Non-Goals rules out building a custom one) — Owner: team. Block: no.
 - **Risk:** Ties to the secondary success criterion (7-day return). Needs real saved cards to operate on, so it's sequenced after S-02; can run in parallel with S-03 since neither depends on the other.
-- **Status:** ready
+- **Status:** in-progress
 
 ## Backlog Handoff
 
