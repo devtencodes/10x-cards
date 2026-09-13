@@ -226,17 +226,17 @@ One new migration adds a trigger + function; no existing data is affected (no ap
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx astro check`
-- [x] 2.2 Build passes: `npm run build`
-- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx astro check` — c5c5293
+- [x] 2.2 Build passes: `npm run build` — c5c5293
+- [x] 2.3 Linting passes: `npm run lint` — c5c5293
 
 #### Manual
 
-- [x] 2.4 Edit/Delete controls appear on every card
-- [x] 2.5 Edit reveals prefilled editable fields; only one card is active at a time
-- [x] 2.6 Saving an edit updates the card in place without a full reload
-- [x] 2.7 Saving an edit with unchanged content succeeds with no visible error
-- [x] 2.8 Delete confirm toggle (Yes/No) works; No reverts with no changes
-- [x] 2.9 Confirmed delete removes the card without a full reload; last-card delete shows the empty state
-- [x] 2.10 A forced save/delete failure shows an inline error scoped to that card only
-- [x] 2.11 Signed-out visit to `/flashcards` still redirects to `/auth/signin`
+- [x] 2.4 Edit/Delete controls appear on every card — c5c5293
+- [x] 2.5 Edit reveals prefilled editable fields; only one card is active at a time — c5c5293
+- [x] 2.6 Saving an edit updates the card in place without a full reload — c5c5293
+- [x] 2.7 Saving an edit with unchanged content succeeds with no visible error — c5c5293
+- [x] 2.8 Delete confirm toggle (Yes/No) works; No reverts with no changes — c5c5293
+- [x] 2.9 Confirmed delete removes the card without a full reload; last-card delete shows the empty state — c5c5293
+- [x] 2.10 A forced save/delete failure shows an inline error scoped to that card only — c5c5293
+- [x] 2.11 Signed-out visit to `/flashcards` still redirects to `/auth/signin` — c5c5293
