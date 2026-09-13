@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase";
 
 const MIN_FIELD_LENGTH = 1;
 const MAX_FIELD_LENGTH = 2000;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function isValidField(value: unknown): value is string {
   return typeof value === "string" && value.trim().length >= MIN_FIELD_LENGTH && value.length <= MAX_FIELD_LENGTH;
@@ -21,6 +22,9 @@ export const PATCH: APIRoute = async (context) => {
   const { id } = context.params;
   if (!id) {
     return Response.json({ error: "Flashcard id is required" }, { status: 400 });
+  }
+  if (!UUID_PATTERN.test(id)) {
+    return Response.json({ error: "Invalid flashcard id" }, { status: 400 });
   }
 
   let body: unknown;
@@ -75,6 +79,9 @@ export const DELETE: APIRoute = async (context) => {
   const { id } = context.params;
   if (!id) {
     return Response.json({ error: "Flashcard id is required" }, { status: 400 });
+  }
+  if (!UUID_PATTERN.test(id)) {
+    return Response.json({ error: "Invalid flashcard id" }, { status: 400 });
   }
 
   // Same RLS-empty-array reasoning as PATCH above — no explicit user_id
