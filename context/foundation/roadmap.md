@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-09-03
-updated: 2026-09-12
+updated: 2026-09-13
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -45,7 +45,7 @@ Manually authoring flashcards is the friction that keeps self-directed learners 
 | F-01 | flashcard-data-foundation         | (foundation) flashcards + review-schedule tables exist in Supabase, RLS-scoped per user | —                        | FR-006, NFR (privacy), Access Control | done |
 | S-01 | email-password-auth               | sign up with email + password and log in                                            | —                        | FR-001, FR-002                     | done     |
 | S-02 | ai-generated-flashcards            | paste text, get AI-generated candidates, review (accept/edit/reject, bulk-accept), and save them | F-01, S-01, OpenRouter secret provisioned | US-01, FR-003, FR-004, FR-005, FR-006, FR-007 | done |
-| S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | ready |
+| S-03 | manage-saved-flashcards            | view, edit, and delete saved flashcards                                             | S-02, F-01               | FR-007, FR-008, FR-009             | in-progress |
 | S-04 | spaced-repetition-study-session    | study due cards and rate recall, rescheduling the next review                       | S-02, F-01               | FR-010, FR-011                     | ready |
 
 ## Streams
@@ -123,7 +123,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Off the critical path per the PRD's own scope note ("supporting requirement, off the critical path"). Mostly CRUD against the schema F-01 already established — low risk.
-- **Status:** ready
+- **Status:** in-progress
 
 ### S-04: User studies due flashcards via spaced repetition
 
