@@ -292,27 +292,27 @@ No database migration in this plan — the existing `flashcards`/`review_schedul
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx astro check`
-- [x] 2.2 Build passes: `npm run build`
-- [x] 2.3 Linting passes: `npm run lint`
-- [x] 2.4 `npm run test:e2e -- tests/e2e/protected-routes.spec.ts` passes
+- [x] 2.1 Type checking passes: `npx astro check` — d2cec00
+- [x] 2.2 Build passes: `npm run build` — d2cec00
+- [x] 2.3 Linting passes: `npm run lint` — d2cec00
+- [x] 2.4 `npm run test:e2e -- tests/e2e/protected-routes.spec.ts` passes — d2cec00
 
 #### Manual
 
-- [x] 2.5 Removing a route from `PROTECTED_ROUTES` makes the spec fail for that route
+- [x] 2.5 Removing a route from `PROTECTED_ROUTES` makes the spec fail for that route — d2cec00
 
 ### Phase 3: Cross-user isolation test (risk #2)
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx astro check`
-- [ ] 3.2 Build passes: `npm run build`
-- [ ] 3.3 Linting passes: `npm run lint`
-- [ ] 3.4 `npm run test:e2e -- tests/e2e/cross-user-isolation.spec.ts` passes
+- [x] 3.1 Type checking passes: `npx astro check`
+- [x] 3.2 Build passes: `npm run build`
+- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.4 `npm run test:e2e -- tests/e2e/cross-user-isolation.spec.ts` passes
 
 #### Manual
 
-- [ ] 3.5 Weakening an RLS policy makes the isolation assertion fail
+- [x] 3.5 Weakening an RLS policy makes the isolation assertion fail
 
 ### Phase 4: E2E quality-rules file + final compatibility check
 
