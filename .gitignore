@@ -30,6 +30,9 @@ pnpm-debug.log*
 .idea/
 .local/
 
+# supabase studio SQL editor query history
+supabase/snippets/
+
 # playwright
 /playwright/.auth/
 /test-results/
