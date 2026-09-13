@@ -206,37 +206,37 @@ One new migration adds a trigger + function; no existing data is affected (no ap
 
 #### Automated
 
-- [x] 1.1 Migration file exists: `ls supabase/migrations/*manage_saved_flashcards.sql`
-- [x] 1.2 Local reset applies cleanly: `npx supabase db reset`
-- [x] 1.3 Rollback script exists: `test -s supabase/rollbacks/*manage_saved_flashcards_down.sql`
-- [x] 1.4 Type checking passes: `npx astro check`
-- [x] 1.5 Build passes: `npm run build`
-- [x] 1.6 Linting passes: `npm run lint`
+- [x] 1.1 Migration file exists: `ls supabase/migrations/*manage_saved_flashcards.sql` — 8603301
+- [x] 1.2 Local reset applies cleanly: `npx supabase db reset` — 8603301
+- [x] 1.3 Rollback script exists: `test -s supabase/rollbacks/*manage_saved_flashcards_down.sql` — 8603301
+- [x] 1.4 Type checking passes: `npx astro check` — 8603301
+- [x] 1.5 Build passes: `npm run build` — 8603301
+- [x] 1.6 Linting passes: `npm run lint` — 8603301
 
 #### Manual
 
-- [x] 1.7 Valid PATCH with well-formed content returns 200 and resets the review schedule to new
-- [x] 1.8 PATCH with unchanged content leaves an already-advanced schedule untouched
-- [x] 1.9 PATCH with out-of-range content returns 400 and touches nothing
-- [x] 1.10 Unauthenticated PATCH returns 401; PATCH on another user's card returns 404
-- [x] 1.11 Valid DELETE returns 200 and removes both the flashcard and its review schedule (cascade)
-- [x] 1.12 Unauthenticated DELETE returns 401; DELETE on a nonexistent/other-user card returns 404
+- [x] 1.7 Valid PATCH with well-formed content returns 200 and resets the review schedule to new — 8603301
+- [x] 1.8 PATCH with unchanged content leaves an already-advanced schedule untouched — 8603301
+- [x] 1.9 PATCH with out-of-range content returns 400 and touches nothing — 8603301
+- [x] 1.10 Unauthenticated PATCH returns 401; PATCH on another user's card returns 404 — 8603301
+- [x] 1.11 Valid DELETE returns 200 and removes both the flashcard and its review schedule (cascade) — 8603301
+- [x] 1.12 Unauthenticated DELETE returns 401; DELETE on a nonexistent/other-user card returns 404 — 8603301
 
 ### Phase 2: Flashcard list UI — inline edit and delete
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx astro check`
-- [ ] 2.2 Build passes: `npm run build`
-- [ ] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx astro check`
+- [x] 2.2 Build passes: `npm run build`
+- [x] 2.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 Edit/Delete controls appear on every card
-- [ ] 2.5 Edit reveals prefilled editable fields; only one card is active at a time
-- [ ] 2.6 Saving an edit updates the card in place without a full reload
-- [ ] 2.7 Saving an edit with unchanged content succeeds with no visible error
-- [ ] 2.8 Delete confirm toggle (Yes/No) works; No reverts with no changes
-- [ ] 2.9 Confirmed delete removes the card without a full reload; last-card delete shows the empty state
-- [ ] 2.10 A forced save/delete failure shows an inline error scoped to that card only
-- [ ] 2.11 Signed-out visit to `/flashcards` still redirects to `/auth/signin`
+- [x] 2.4 Edit/Delete controls appear on every card
+- [x] 2.5 Edit reveals prefilled editable fields; only one card is active at a time
+- [x] 2.6 Saving an edit updates the card in place without a full reload
+- [x] 2.7 Saving an edit with unchanged content succeeds with no visible error
+- [x] 2.8 Delete confirm toggle (Yes/No) works; No reverts with no changes
+- [x] 2.9 Confirmed delete removes the card without a full reload; last-card delete shows the empty state
+- [x] 2.10 A forced save/delete failure shows an inline error scoped to that card only
+- [x] 2.11 Signed-out visit to `/flashcards` still redirects to `/auth/signin`
