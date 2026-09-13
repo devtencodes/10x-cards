@@ -29,3 +29,9 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .local/
+
+# playwright
+/playwright/.auth/
+/test-results/
+/playwright-report/
+/blob-report/
