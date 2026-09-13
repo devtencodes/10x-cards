@@ -278,28 +278,28 @@ No database migration in this plan — the existing `flashcards`/`review_schedul
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx astro check`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Setup project runs cleanly: `npx playwright test --project=setup`
+- [x] 1.1 Type checking passes: `npx astro check` — c02548e
+- [x] 1.2 Build passes: `npm run build` — c02548e
+- [x] 1.3 Linting passes: `npm run lint` — c02548e
+- [x] 1.4 Setup project runs cleanly: `npx playwright test --project=setup` — c02548e
 
 #### Manual
 
-- [x] 1.5 Both storageState files are produced with real, non-empty sessions
-- [x] 1.6 Re-running setup a second time succeeds via the sign-in fallback
+- [x] 1.5 Both storageState files are produced with real, non-empty sessions — c02548e
+- [x] 1.6 Re-running setup a second time succeeds via the sign-in fallback — c02548e
 
 ### Phase 2: Protected-route gating test (risk #3)
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx astro check`
-- [ ] 2.2 Build passes: `npm run build`
-- [ ] 2.3 Linting passes: `npm run lint`
-- [ ] 2.4 `npm run test:e2e -- tests/e2e/protected-routes.spec.ts` passes
+- [x] 2.1 Type checking passes: `npx astro check`
+- [x] 2.2 Build passes: `npm run build`
+- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.4 `npm run test:e2e -- tests/e2e/protected-routes.spec.ts` passes
 
 #### Manual
 
-- [ ] 2.5 Removing a route from `PROTECTED_ROUTES` makes the spec fail for that route
+- [x] 2.5 Removing a route from `PROTECTED_ROUTES` makes the spec fail for that route
 
 ### Phase 3: Cross-user isolation test (risk #2)
 

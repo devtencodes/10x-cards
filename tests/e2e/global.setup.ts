@@ -1,4 +1,4 @@
-import { test as setup, type Page } from "@playwright/test";
+import { test as setup, expect, type Page } from "@playwright/test";
 
 // Two fixed accounts, reused across every local run (never deleted — see
 // plan.md's "Test-user lifecycle" decision). Since Supabase's local stack
@@ -20,27 +20,52 @@ const USER_B = { email: "e2e-user-b@example.com", password: "e2e-password-2" };
  * failure redirect, which we detect by inspecting the landed URL's query
  * string, then retry as a sign-in instead.
  */
+/**
+ * SignInForm/SignUpForm are React islands (`client:load`): their inputs are
+ * SSR-rendered immediately, but the onChange handlers that wire them to
+ * React state only attach once hydration completes. A fill+click issued
+ * before that finishes can have its DOM writes silently overwritten by the
+ * hydrating component before the (synchronous, client-side) submit
+ * validation runs — the form then blocks its own submission (no navigation
+ * at all) instead of erroring, so a single fill+click has no reliable
+ * "did this actually work" signal until we check whether navigation
+ * happened. Verifying one field's value right after filling it doesn't
+ * catch this: the check passes in the instant right after fill, then
+ * hydration wipes the field a moment later, right before the click.
+ *
+ * The fix is to retry the *whole* fill-and-submit attempt (short per-attempt
+ * nav timeout) rather than re-verifying individual fields — each retry
+ * happens strictly later in real time, by which point hydration has
+ * reliably finished and the same fill sequence sticks.
+ */
 async function submitSignup(page: Page, email: string, password: string) {
   await page.goto("/auth/signup");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: true }).fill(password);
-  await page.getByLabel("Confirm password").fill(password);
-  await page.getByRole("button", { name: "Create account" }).click();
-  // Success lands on /auth/confirm-email (session cookies are already set
-  // by then — enable_confirmations=false makes signUp() active immediately,
-  // the redirect is purely a UI artifact); failure lands back on
-  // /auth/signup with an `error` query param. Either way, wait for one of
-  // the two known destinations rather than a fixed timeout.
-  await page.waitForURL((url) => url.pathname === "/auth/confirm-email" || url.searchParams.has("error"));
+
+  await expect(async () => {
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password", { exact: true }).fill(password);
+    await page.getByLabel("Confirm password").fill(password);
+    await page.getByRole("button", { name: "Create account" }).click();
+    // Success lands on /auth/confirm-email (session cookies are already set
+    // by then — enable_confirmations=false makes signUp() active
+    // immediately, the redirect is purely a UI artifact); failure lands
+    // back on /auth/signup with an `error` query param.
+    await page.waitForURL((url) => url.pathname === "/auth/confirm-email" || url.searchParams.has("error"), {
+      timeout: 3000,
+    });
+  }).toPass({ timeout: 20_000 });
 }
 
 async function submitSignin(page: Page, email: string, password: string) {
   await page.goto("/auth/signin");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: true }).fill(password);
-  await page.getByRole("button", { name: "Sign in" }).click();
-  // Success lands on "/"; failure lands back on /auth/signin with `error`.
-  await page.waitForURL((url) => url.pathname === "/" || url.searchParams.has("error"));
+
+  await expect(async () => {
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password", { exact: true }).fill(password);
+    await page.getByRole("button", { name: "Sign in" }).click();
+    // Success lands on "/"; failure lands back on /auth/signin with `error`.
+    await page.waitForURL((url) => url.pathname === "/" || url.searchParams.has("error"), { timeout: 3000 });
+  }).toPass({ timeout: 20_000 });
 }
 
 async function ensureSignedIn(page: Page, email: string, password: string) {
