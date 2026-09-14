@@ -1,10 +1,10 @@
 ---
 change_id: testing-critical-path-access-control
 title: Bootstrap Playwright and prove cross-user access control end-to-end
-status: impl_reviewed
+status: archived
 created: 2026-09-13
 updated: 2026-09-14
-archived_at: null
+archived_at: 2026-09-14T15:28:09Z
 ---
 
 ## Notes
