@@ -318,12 +318,12 @@ No database migration in this plan — the existing `flashcards`/`review_schedul
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npx astro check`
-- [x] 4.2 Build passes: `npm run build`
-- [x] 4.3 Linting passes: `npm run lint`
-- [x] 4.4 Full suite passes: `npm run test:e2e`
+- [x] 4.1 Type checking passes: `npx astro check` — 3803124
+- [x] 4.2 Build passes: `npm run build` — 3803124
+- [x] 4.3 Linting passes: `npm run lint` — 3803124
+- [x] 4.4 Full suite passes: `npm run test:e2e` — 3803124
 
 #### Manual
 
-- [x] 4.5 `.claude/skills/10x-e2e`'s readiness glob finds real files
-- [x] 4.6 `AGENTS.md`'s test-command documentation reads correctly
+- [x] 4.5 `.claude/skills/10x-e2e`'s readiness glob finds real files — 3803124
+- [x] 4.6 `AGENTS.md`'s test-command documentation reads correctly — 3803124
