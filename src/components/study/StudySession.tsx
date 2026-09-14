@@ -75,7 +75,7 @@ export default function StudySession({ cards: initialCards }: StudySessionProps)
   if (!current) {
     return (
       <div className="text-center">
-        <p className="text-blue-100/80">All done — nothing left to study.</p>
+        <p className="text-blue-100/80">All done. Nothing left to study.</p>
         <a href="/dashboard" className="mt-4 inline-block text-sm text-purple-300 hover:underline">
           &larr; Back to dashboard
         </a>
@@ -122,7 +122,7 @@ export default function StudySession({ cards: initialCards }: StudySessionProps)
           <button
             type="button"
             onClick={handleReveal}
-            className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+            className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20"
           >
             Show answer
           </button>

@@ -1,47 +1,134 @@
 ---
+import AppHeader from "@/components/AppHeader.astro";
 import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { BookMarked, CalendarClock, GraduationCap, Library, Sparkles } from "lucide-react";
 
 const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+let totalCount = 0;
+let dueCount = 0;
+if (supabase) {
+  const [total, due] = await Promise.all([
+    supabase.from("flashcards").select("*", { count: "exact", head: true }),
+    supabase
+      .from("review_schedules")
+      .select("*", { count: "exact", head: true })
+      .lte("due_at", new Date().toISOString()),
+  ]);
+  totalCount = total.count ?? 0;
+  dueCount = due.count ?? 0;
+}
+
+const firstName = user?.email?.split("@")[0] ?? "there";
 ---
 
 <Layout title="Dashboard">
-  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
-      <h1 class="mb-4 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-        Dashboard
-      </h1>
-      <p class="text-blue-100/80">
-        Welcome, <span class="font-semibold text-white">{user?.email}</span>
-      </p>
-      <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
-      <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+  <div class="bg-cosmic relative min-h-screen w-full overflow-hidden">
+    <!-- Cosmic orbs -->
+    <div
+      class="pointer-events-none absolute top-1/4 -left-24 h-[350px] w-[350px] rounded-full bg-purple-500/20 blur-[120px]"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute top-2/3 -right-16 h-[250px] w-[250px] rounded-full bg-blue-500/15 blur-[100px]"
+    >
+    </div>
+
+    <div class="relative z-10 flex min-h-screen flex-col">
+      <AppHeader />
+
+      <!-- Content -->
+      <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-8 sm:py-14">
+        <h1 class="mb-1 text-2xl font-bold text-white sm:text-3xl">Welcome back, {firstName}</h1>
+        <p class="mb-8 text-blue-100/60">
+          {
+            totalCount === 0
+              ? "Paste some text to generate your first flashcards."
+              : dueCount > 0
+                ? `You have ${dueCount} card${dueCount === 1 ? "" : "s"} due for review.`
+                : "You're all caught up on reviews."
+          }
+        </p>
+
+        <!-- Stats -->
+        <div class="mb-8 grid grid-cols-2 gap-4">
+          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+            <div class="mb-2 flex items-center gap-2 text-blue-100/50">
+              <Library size={16} strokeWidth={1.75} />
+              <span class="text-xs font-medium tracking-wide uppercase">Saved cards</span>
+            </div>
+            <p class="text-3xl font-bold text-white">{totalCount}</p>
+          </div>
+          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+            <div class="mb-2 flex items-center gap-2 text-blue-100/50">
+              <CalendarClock size={16} strokeWidth={1.75} />
+              <span class="text-xs font-medium tracking-wide uppercase">Due today</span>
+            </div>
+            <p class="text-3xl font-bold text-white">{dueCount}</p>
+          </div>
+        </div>
+
+        <!-- Primary action -->
         <a
           href="/generate"
-          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+          class="group mb-4 flex items-center justify-between rounded-xl border border-purple-400/30 bg-gradient-to-r from-purple-500/15 to-blue-500/10 p-6 transition-colors hover:border-purple-400/50"
         >
-          Generate flashcards
+          <div class="flex items-center gap-4">
+            <div
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-purple-500/20 text-purple-200"
+            >
+              <Sparkles size={22} strokeWidth={1.75} />
+            </div>
+            <div>
+              <h2 class="font-semibold text-white">Generate flashcards</h2>
+              <p class="text-sm text-blue-100/60">Paste text and let AI draft your next set of cards.</p>
+            </div>
+          </div>
+          <span class="text-blue-100/40 transition-transform group-hover:translate-x-1 group-hover:text-white">
+            &rarr;
+          </span>
         </a>
-        <a
-          href="/flashcards"
-          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
-        >
-          My flashcards
-        </a>
-        <a
-          href="/study"
-          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
-        >
-          Study
-        </a>
-      </div>
-      <form method="POST" action="/api/auth/signout" class="mt-4">
-        <button
-          type="submit"
-          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
-        >
-          Sign out
-        </button>
-      </form>
+
+        <!-- Secondary actions -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <a
+            href="/flashcards"
+            class="group flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-5 transition-colors hover:border-white/25 hover:bg-white/10"
+          >
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-blue-100">
+                <BookMarked size={18} strokeWidth={1.75} />
+              </div>
+              <div>
+                <h2 class="text-sm font-semibold text-white">My flashcards</h2>
+                <p class="text-xs text-blue-100/50">View, edit, and delete saved cards.</p>
+              </div>
+            </div>
+            <span class="text-blue-100/30 transition-transform group-hover:translate-x-1 group-hover:text-white">
+              &rarr;
+            </span>
+          </a>
+          <a
+            href="/study"
+            class="group flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-5 transition-colors hover:border-white/25 hover:bg-white/10"
+          >
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-blue-100">
+                <GraduationCap size={18} strokeWidth={1.75} />
+              </div>
+              <div>
+                <h2 class="text-sm font-semibold text-white">Study</h2>
+                <p class="text-xs text-blue-100/50">Review cards due today.</p>
+              </div>
+            </div>
+            <span class="text-blue-100/30 transition-transform group-hover:translate-x-1 group-hover:text-white">
+              &rarr;
+            </span>
+          </a>
+        </div>
+      </main>
     </div>
   </div>
 </Layout>

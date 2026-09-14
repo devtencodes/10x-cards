@@ -1,0 +1,24 @@
+---
+// Single source of truth for the "10x[badge] 10xCards" wordmark, reused by
+// the landing nav, the signed-in app header, and the auth pages so the logo
+// treatment never drifts between them.
+interface Props {
+  href?: string;
+  size?: "sm" | "md";
+}
+
+const { href = "/", size = "sm" } = Astro.props;
+const isMd = size === "md";
+---
+
+<a href={href} class:list={["flex items-center gap-2 font-semibold text-white", isMd ? "text-lg" : "text-base"]}>
+  <span
+    class:list={[
+      "flex items-center justify-center rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 font-bold text-white",
+      isMd ? "h-8 w-8 text-sm" : "h-7 w-7 text-xs",
+    ]}
+  >
+    10x
+  </span>
+  10xCards
+</a>

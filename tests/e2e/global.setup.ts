@@ -63,8 +63,13 @@ async function submitSignin(page: Page, email: string, password: string) {
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Sign in" }).click();
-    // Success lands on "/"; failure lands back on /auth/signin with `error`.
-    await page.waitForURL((url) => url.pathname === "/" || url.searchParams.has("error"), { timeout: 3000 });
+    // Success lands on "/", which middleware immediately redirects a signed-in
+    // user onward to "/dashboard" — the browser follows that chain in one
+    // navigation, so pathname "/" is never actually observed on success.
+    // Failure lands back on /auth/signin with `error`.
+    await page.waitForURL((url) => url.pathname === "/dashboard" || url.searchParams.has("error"), {
+      timeout: 3000,
+    });
   }).toPass({ timeout: 20_000 });
 }
 

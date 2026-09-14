@@ -194,7 +194,7 @@ export default function GenerateFlow() {
       )}
 
       {hasGenerated && status !== "generating" && candidates.length === 0 && (
-        <p className="text-center text-sm text-blue-100/60">No candidates found — try different text.</p>
+        <p className="text-center text-sm text-blue-100/60">No candidates found. Try different text.</p>
       )}
 
       {candidates.length > 0 && (

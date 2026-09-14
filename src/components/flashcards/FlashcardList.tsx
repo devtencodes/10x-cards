@@ -117,7 +117,7 @@ export default function FlashcardList({ cards: initialCards }: FlashcardListProp
   if (cards.length === 0) {
     return (
       <p className="text-center text-sm text-blue-100/60">
-        No flashcards yet —{" "}
+        No flashcards yet.{" "}
         <a href="/generate" className="text-purple-300 hover:underline">
           Generate some
         </a>

@@ -1,8 +1,10 @@
 ---
-import Welcome from "@/components/Welcome.astro";
+import Landing from "@/components/marketing/Landing.astro";
 import Layout from "@/layouts/Layout.astro";
+
+// Signed-in users are redirected to /dashboard by middleware before this renders.
 ---
 
 <Layout>
-  <Welcome />
+  <Landing />
 </Layout>

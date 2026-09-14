@@ -1,0 +1,200 @@
+---
+import { BookOpenCheck, GraduationCap, Sparkles, WandSparkles } from "lucide-react";
+import BrandMark from "@/components/BrandMark.astro";
+
+const steps = [
+  {
+    icon: WandSparkles,
+    title: "Paste your text",
+    body: "Drop in an article, your notes, or a textbook excerpt, up to 10,000 characters.",
+  },
+  {
+    icon: Sparkles,
+    title: "Review AI-drafted cards",
+    body: "Accept, edit, or reject each candidate. Bulk-accept when they're all good.",
+  },
+  {
+    icon: GraduationCap,
+    title: "Study on schedule",
+    body: "Rate how well you remembered each card. Due cards resurface right on time.",
+  },
+];
+---
+
+<div class="bg-cosmic relative min-h-screen w-full overflow-hidden">
+  <!-- Cosmic orbs -->
+  <div
+    class="pointer-events-none absolute top-1/4 -left-24 h-[350px] w-[350px] rounded-full bg-purple-500/20 blur-[120px]"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute top-2/3 -right-16 h-[250px] w-[250px] rounded-full bg-blue-500/15 blur-[100px]"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute top-0 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-indigo-400/10 blur-[140px]"
+  >
+  </div>
+
+  <!-- Star field -->
+  <div
+    class="pointer-events-none absolute inset-0"
+    style="background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px); background-size: 200px 200px, 150px 150px, 100px 100px; background-position: 0 0, 40px 60px, 80px 30px;"
+  >
+  </div>
+
+  <div class="relative z-10">
+    <!-- Nav -->
+    <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-8">
+      <BrandMark size="md" />
+      <div class="flex items-center gap-5">
+        <a href="/auth/signin" class="text-sm text-blue-100/70 transition-colors hover:text-white"> Sign in </a>
+        <a
+          href="/auth/signup"
+          class="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500"
+        >
+          Get started free
+        </a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="mx-auto grid max-w-6xl gap-12 px-4 pt-12 pb-24 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-8">
+      <div class="flex flex-col items-start text-left">
+        <h1 class="mb-5 text-5xl leading-tight font-bold text-white sm:text-6xl">
+          Flashcards <span
+            class="bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 bg-clip-text text-transparent"
+            >worth remembering</span
+          >.
+        </h1>
+        <p class="mb-8 max-w-md text-lg text-blue-100/70">
+          Paste an article or your notes. AI drafts the questions and answers. You review, save, and study with spaced
+          repetition.
+        </p>
+        <div class="flex flex-col gap-4 sm:flex-row">
+          <a
+            href="/auth/signup"
+            class="inline-flex items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-purple-500"
+          >
+            Get started free
+          </a>
+          <a
+            href="/auth/signin"
+            class="inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-white/10"
+          >
+            Sign in
+          </a>
+        </div>
+      </div>
+
+      <!-- Flip-card visual -->
+      <div class="flex flex-col items-center gap-3">
+        <button
+          type="button"
+          class="flip-card group block w-full max-w-sm text-left"
+          aria-label="Example flashcard, front and back. Hover or focus to flip it."
+        >
+          <div class="flip-inner relative h-56 w-full">
+            <div
+              class="flip-face absolute inset-0 flex flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl"
+            >
+              <span class="text-xs font-medium tracking-wide text-purple-300/80">QUESTION</span>
+              <p class="text-xl leading-snug font-medium text-white">What is spaced repetition?</p>
+              <span class="text-xs text-blue-100/50">Generated from your pasted text</span>
+            </div>
+            <div
+              class="flip-face flip-back absolute inset-0 flex flex-col justify-between rounded-2xl border border-purple-400/20 bg-purple-500/10 p-6 backdrop-blur-xl"
+            >
+              <span class="text-xs font-medium tracking-wide text-purple-300/80">ANSWER</span>
+              <p class="text-base leading-relaxed text-white">
+                A study technique that reviews material right before you'd otherwise forget it, strengthening long-term
+                memory.
+              </p>
+            </div>
+          </div>
+        </button>
+        <p class="text-xs text-blue-100/40">Hover or focus the card to flip it</p>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="mx-auto max-w-6xl px-4 pb-24 sm:px-8">
+      <h2 class="mb-12 text-2xl font-semibold text-white sm:text-3xl">How it works</h2>
+      <div class="relative grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
+        <div
+          class="pointer-events-none absolute top-6 right-0 left-0 hidden h-px bg-gradient-to-r from-transparent via-white/15 to-transparent md:block"
+        >
+        </div>
+        {
+          steps.map((step) => (
+            <div class="relative flex flex-col items-start gap-4">
+              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-[#0a0e1a] text-purple-300">
+                <step.icon size={20} strokeWidth={1.75} />
+              </div>
+              <h3 class="text-lg font-semibold text-white">{step.title}</h3>
+              <p class="text-sm leading-relaxed text-blue-100/60">{step.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Why it works -->
+    <section class="mx-auto max-w-3xl px-4 pb-24 text-center sm:px-8">
+      <BookOpenCheck size={28} strokeWidth={1.5} className="mx-auto mb-6 text-purple-300" />
+      <p class="text-xl leading-relaxed text-blue-100/80 sm:text-2xl">
+        Cramming fades within days. Spaced repetition reviews each card right before you're about to forget it, so what
+        you learn actually stays learned, with far less total study time.
+      </p>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="mx-auto max-w-4xl px-4 pb-24 sm:px-8">
+      <div
+        class="flex flex-col items-center gap-6 rounded-2xl border border-white/10 bg-white/5 p-10 text-center backdrop-blur-xl sm:p-14"
+      >
+        <h2 class="text-2xl font-semibold text-white sm:text-3xl">Ready to stop forgetting what you read?</h2>
+        <a
+          href="/auth/signup"
+          class="inline-flex items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-purple-500"
+        >
+          Get started free
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mx-auto max-w-6xl px-4 pb-10 sm:px-8">
+      <div class="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
+        <span class="text-sm text-blue-100/40">© 2026 10xCards</span>
+        <a href="/auth/signin" class="text-sm text-blue-100/40 transition-colors hover:text-white"> Sign in </a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<style>
+  .flip-card {
+    perspective: 1200px;
+    outline: none;
+  }
+  .flip-inner {
+    transform-style: preserve-3d;
+    transition: transform 500ms cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  .flip-card:hover .flip-inner,
+  .flip-card:focus-visible .flip-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-face {
+    backface-visibility: hidden;
+  }
+  .flip-back {
+    transform: rotateY(180deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flip-inner {
+      transition: none;
+    }
+  }
+</style>

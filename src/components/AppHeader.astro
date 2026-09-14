@@ -1,0 +1,27 @@
+---
+// Persistent chrome for every signed-in page: brand + identity + sign out.
+// Sign out deliberately lives here, not inside any page's content card, so
+// it's always in the same spot and never competes with task actions.
+import { LogOut } from "lucide-react";
+import BrandMark from "@/components/BrandMark.astro";
+
+const { user } = Astro.locals;
+---
+
+<header class="border-b border-white/10 bg-white/[0.03]">
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-8">
+    <BrandMark href="/dashboard" />
+    <div class="flex items-center gap-4">
+      <span class="hidden text-sm text-blue-100/60 sm:inline">{user?.email}</span>
+      <form method="POST" action="/api/auth/signout">
+        <button
+          type="submit"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-sm text-blue-100/70 transition-colors hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300"
+        >
+          <LogOut size={15} strokeWidth={2} />
+          Sign out
+        </button>
+      </form>
+    </div>
+  </div>
+</header>
