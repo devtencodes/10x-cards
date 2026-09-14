@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type BrowserContext } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types";
 
@@ -27,39 +27,41 @@ test("a signed-in user cannot read, mutate, or see another user's flashcard/revi
   browser,
 }) => {
   const uniqueFront = `E2E isolation check ${Date.now().toString()}`;
+  const supabaseAsUserA = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
 
-  // Arrange: seed one flashcard as user A through the real API route — no
-  // AI call needed, save.ts accepts a pre-formed card directly.
   const contextA = await browser.newContext({ storageState: "playwright/.auth/user-a.json" });
   const pageA = await contextA.newPage();
-  const saveResponse = await pageA.request.post("/api/flashcards/save", {
-    data: { cards: [{ front: uniqueFront, back: "E2E isolation check — back", source: "ai_generated" }] },
-  });
-  expect(saveResponse.ok()).toBe(true);
-
-  // save.ts's response carries only a count, never the inserted row's id,
-  // and there's no GET API route to look it up through — the rendered
-  // /flashcards list never exposes the id in the DOM either
-  // (FlashcardListItem keeps it in closure state only). Read it back via a
-  // direct Supabase client authenticated as user A: same anon key, same
-  // `auth.uid() = user_id` RLS policy the app itself relies on — this is
-  // test orchestration, not a bypass.
-  const supabaseAsUserA = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
-  const { error: signInError } = await supabaseAsUserA.auth.signInWithPassword(USER_A);
-  if (signInError) throw signInError;
-  const { data: seeded, error: lookupError } = await supabaseAsUserA
-    .from("flashcards")
-    .select("id")
-    .eq("front", uniqueFront)
-    .single();
-  // .single()'s typed result is a discriminated union: a null `error` here
-  // guarantees `seeded` is non-null, so there's nothing further to check.
-  if (lookupError) throw lookupError;
-  const flashcardId = seeded.id;
+  let contextB: BrowserContext | undefined;
 
   try {
+    // Arrange: seed one flashcard as user A through the real API route — no
+    // AI call needed, save.ts accepts a pre-formed card directly.
+    const saveResponse = await pageA.request.post("/api/flashcards/save", {
+      data: { cards: [{ front: uniqueFront, back: "E2E isolation check — back", source: "ai_generated" }] },
+    });
+    expect(saveResponse.ok()).toBe(true);
+
+    // save.ts's response carries only a count, never the inserted row's id,
+    // and there's no GET API route to look it up through — the rendered
+    // /flashcards list never exposes the id in the DOM either
+    // (FlashcardListItem keeps it in closure state only). Read it back via a
+    // direct Supabase client authenticated as user A: same anon key, same
+    // `auth.uid() = user_id` RLS policy the app itself relies on — this is
+    // test orchestration, not a bypass.
+    const { error: signInError } = await supabaseAsUserA.auth.signInWithPassword(USER_A);
+    if (signInError) throw signInError;
+    const { data: seeded, error: lookupError } = await supabaseAsUserA
+      .from("flashcards")
+      .select("id")
+      .eq("front", uniqueFront)
+      .single();
+    // .single()'s typed result is a discriminated union: a null `error` here
+    // guarantees `seeded` is non-null, so there's nothing further to check.
+    if (lookupError) throw lookupError;
+    const flashcardId = seeded.id;
+
     // Act + assert, as user B: none of these should succeed.
-    const contextB = await browser.newContext({ storageState: "playwright/.auth/user-b.json" });
+    contextB = await browser.newContext({ storageState: "playwright/.auth/user-b.json" });
     const pageB = await contextB.newPage();
 
     const patchResponse = await pageB.request.patch(`/api/flashcards/${flashcardId}`, {
@@ -89,18 +91,27 @@ test("a signed-in user cannot read, mutate, or see another user's flashcard/revi
     await pageB.goto("/study");
     await expect(pageB.getByText(uniqueFront)).toHaveCount(0);
 
-    await contextB.close();
-
     // Positive control: user A still sees their own card — proves the
     // isolation checks above aren't vacuously true (e.g. a broken query
     // that returns nothing for anyone).
     await pageA.goto("/flashcards");
     await expect(pageA.getByText(uniqueFront)).toBeVisible();
   } finally {
-    // Cleanup the seeded flashcard *data* even if an assertion above
-    // failed — the two test accounts persist across runs, but the rows
-    // they create should not (per .claude/skills/10x-e2e's cleanup rule).
-    await pageA.request.delete(`/api/flashcards/${flashcardId}`, { data: {} });
+    // Close user B's context unconditionally — not just on the success
+    // path — so a thrown assertion above (the exact scenario this test
+    // exists to catch) doesn't leak it.
+    if (contextB) await contextB.close();
+
+    // Clean up the seeded flashcard *data* even if an assertion — or the
+    // sign-in/lookup above — failed before `flashcardId` was ever known.
+    // Deleting by `front` text (not id) via a fresh sign-in attempt covers
+    // that case too; the two test accounts persist across runs, but the
+    // rows they create should not (per .claude/skills/10x-e2e's cleanup
+    // rule).
+    const { error: cleanupSignInError } = await supabaseAsUserA.auth.signInWithPassword(USER_A);
+    if (!cleanupSignInError) {
+      await supabaseAsUserA.from("flashcards").delete().eq("front", uniqueFront);
+    }
     await contextA.close();
   }
 });
