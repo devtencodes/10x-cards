@@ -2,7 +2,9 @@
 
 Turn pasted text into study-ready flashcards with AI, then review them with spaced repetition — without the tedium of writing every card by hand.
 
-Built as the capstone project for [10xDevs](https://10xdevs.pl/), an AI-assisted software engineering course.
+Built as the capstone project for [10xDevs](https://10xdevs.pl/), a 5-week AI-native software engineering course.
+
+**🔗 Live demo:** [10x-cards.devtencodes.workers.dev](https://10x-cards.devtencodes.workers.dev)
 
 ## The problem
 
@@ -212,7 +214,7 @@ npm run test:e2e
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/). The live deployment is at [10x-cards.devtencodes.workers.dev](https://10x-cards.devtencodes.workers.dev).
 
 ```bash
 npm run build
