@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-09-03
-updated: 2026-09-13
+updated: 2026-09-14
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -166,7 +166,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Search/filter on the flashcard list** — Why parked: PRD non-goal; deferred to v1.1, v1 ships a flat chronological list.
 - **De-duplication checking on saved cards** — Why parked: PRD non-goal; deferred to v1.1.
 - **App-level logging/error tracking (Sentry, structured logs)** — Why parked: baseline reports this absent, but no slice's Unlocks require it — the PRD's failure-feedback NFR is a UI-level requirement (clear message to the user), not an infra-level one. Revisit post-MVP if debugging production issues blind becomes painful.
-- **Landing page + polished login/dashboard UI** — Why parked: not in v1 PRD scope; every M-1 slice deliberately deferred visual polish given the deadline pressure ("no extra polish until this ships"). Not yet a roadmap slice — it has no source-anchor (FR/US) in the current PRD to trace to. Revisit as the first candidate milestone (or slice within one) once M-1 closes: re-invoke `/10x-roadmap` with a self-description of the desired outcome (or an updated PRD) so it gets a proper decomposition instead of being invented ad hoc.
 
 ## Milestone History
 
@@ -179,3 +178,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-02: user pastes source text (100–10,000 characters), triggers AI generation, reviews each candidate (accept, edit, or reject — plus a bulk accept-all), and accepted cards are saved and immediately visible in their flashcard list.** — Archived 2026-09-12 → `context/archive/2026-09-12-ai-generated-flashcards/`. Lesson: —.
 - **S-03: user can view their saved flashcards, edit a card (which resets its review schedule to "new"), and delete a card after a confirmation step.** — Archived 2026-09-13 → `context/archive/2026-09-13-manage-saved-flashcards/`. Lesson: —.
 - **S-04: user can start a study session that surfaces cards due per the review schedule (with an explanatory empty-state when none are due) and rate recall with a binary "remembered"/"forgot" rating, which reschedules the next review.** — Archived 2026-09-13 → `context/archive/2026-09-13-spaced-repetition-study-session/`. Lesson: —.
+- **Landing page + polished login/dashboard UI** — done 2026-09-14 (`31fe36c feat: replace starter landing page with product UI, polish dashboard/auth`). Shipped ad hoc, not as a formally decomposed roadmap slice/milestone — no `/10x-plan` was run. Covered: product-specific landing page (Landing.astro) replacing starter content, signed-in redirect `/` → `/dashboard`, dashboard rebuilt with persistent header + live stats, generate/flashcards/study pages moved to the shared header shell, auth pages restyled with shared brand mark, shared AppHeader/BrandMark components extracted, a contrast bug fix on the study session's "Show answer" button, and starter-leftover cleanup.
