@@ -19,7 +19,7 @@
 - `npm run build` — production build; `npm run preview` — preview it.
 - `npm run lint` / `npm run lint:fix` — ESLint with type-checked rules (`@eslint.config.js`).
 - `npm run format` — Prettier (astro + tailwind plugins, `@.prettierrc.json`).
-- No test runner is configured yet — don't assume `npm test` exists.
+- `npm run test:e2e` — Playwright e2e suite (`playwright.config.ts`, specs under `tests/e2e/`). Requires the local Supabase stack running (`npx supabase start`) — Playwright starts the dev server itself but not the database.
 
 ## Coding Style & Naming Conventions
 
@@ -34,3 +34,17 @@ Only one commit exists so far ("bootstrap project") — no message convention is
 ## Security & Configuration Tips
 
 `SUPABASE_URL` / `SUPABASE_KEY` are declared as server-only secrets via `astro:env` in `@astro.config.mjs` — never expose them client-side. Local dev: copy `.env.example` to `.env` (Node) and `.dev.vars` (Cloudflare, gitignored). CI requires both as GitHub repository secrets.
+
+## E2E Testing Rules
+
+- Use getByRole, getByLabel, getByText as primary locators.
+  Fall back to getByTestId only when accessibility attributes are ambiguous.
+- Never use CSS selectors, XPath, or DOM structure for locating elements.
+- Each test must be independently runnable — no shared state between tests.
+- Never use page.waitForTimeout(). Wait for specific conditions:
+  toBeVisible(), waitForURL(), waitForResponse().
+- Assert the business outcome, not implementation details.
+- Use unique identifiers (e.g., timestamp suffix) for test data
+  to avoid collisions in parallel runs. Clean up in afterEach.
+- Use storageState for authentication — never log in through UI
+  in individual tests.

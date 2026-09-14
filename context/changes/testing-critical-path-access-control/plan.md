@@ -305,25 +305,25 @@ No database migration in this plan — the existing `flashcards`/`review_schedul
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx astro check`
-- [x] 3.2 Build passes: `npm run build`
-- [x] 3.3 Linting passes: `npm run lint`
-- [x] 3.4 `npm run test:e2e -- tests/e2e/cross-user-isolation.spec.ts` passes
+- [x] 3.1 Type checking passes: `npx astro check` — b132458
+- [x] 3.2 Build passes: `npm run build` — b132458
+- [x] 3.3 Linting passes: `npm run lint` — b132458
+- [x] 3.4 `npm run test:e2e -- tests/e2e/cross-user-isolation.spec.ts` passes — b132458
 
 #### Manual
 
-- [x] 3.5 Weakening an RLS policy makes the isolation assertion fail
+- [x] 3.5 Weakening an RLS policy makes the isolation assertion fail — b132458
 
 ### Phase 4: E2E quality-rules file + final compatibility check
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx astro check`
-- [ ] 4.2 Build passes: `npm run build`
-- [ ] 4.3 Linting passes: `npm run lint`
-- [ ] 4.4 Full suite passes: `npm run test:e2e`
+- [x] 4.1 Type checking passes: `npx astro check`
+- [x] 4.2 Build passes: `npm run build`
+- [x] 4.3 Linting passes: `npm run lint`
+- [x] 4.4 Full suite passes: `npm run test:e2e`
 
 #### Manual
 
-- [ ] 4.5 `.claude/skills/10x-e2e`'s readiness glob finds real files
-- [ ] 4.6 `AGENTS.md`'s test-command documentation reads correctly
+- [x] 4.5 `.claude/skills/10x-e2e`'s readiness glob finds real files
+- [x] 4.6 `AGENTS.md`'s test-command documentation reads correctly
